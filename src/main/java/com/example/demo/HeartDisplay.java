@@ -30,29 +30,31 @@ public class HeartDisplay {
 	
 	private void initializeHearts() {
 		for (int i = 0; i < numberOfHeartsToDisplay; i++) {
-			ImageView heart = createHeart();
-			if (heart != null){
-				container.getChildren().add(heart);
-			}
+			ImageView heart = new ImageView(new Image(getClass().getResource(HEART_IMAGE_NAME).toExternalForm()));
+
+			heart.setFitHeight(HEART_HEIGHT);
+			heart.setPreserveRatio(true);
+			container.getChildren().add(heart);
 		}
 	}
 
-	private ImageView createHeart(){
-		try{
-			Image heartImage = new Image(getClass().getResourceAsStream(HEART_IMAGE_NAME));
-			ImageView heart = new ImageView(heartImage);
-			heart.setFitHeight(HEART_HEIGHT);
-			heart.setPreserveRatio(true);
-			return heart;
-		} catch(Exception e){
-			System.out.println("heart image not found. please check the path" + HEART_IMAGE_NAME);
-			return null;
-		}
-	}
+	//private ImageView createHeart(){
+		//try{
+			//Image heartImage = new Image(getClass().getResourceAsStream(HEART_IMAGE_NAME));
+			//ImageView heart = new ImageView(heartImage);
+			//heart.setFitHeight(HEART_HEIGHT);
+			//heart.setPreserveRatio(true);
+			//return heart;
+		//} catch (Exception e){
+			//System.out.println("heart image not found. pls check the path: " + HEART_IMAGE_NAME);
+			//e.printStackTrace();
+			//return null;
+		//}
+	//}
 
 	public void removeHeart() {
 		if (!container.getChildren().isEmpty()) {
-			container.getChildren().remove(0);
+			container.getChildren().remove(INDEX_OF_FIRST_ITEM);
 		}
 	}
 	

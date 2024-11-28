@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 
 public class LevelView {
@@ -20,13 +21,14 @@ public class LevelView {
 		this.heartDisplay = new HeartDisplay(HEART_DISPLAY_X_POSITION, HEART_DISPLAY_Y_POSITION, heartsToDisplay);
 		this.winImage = new WinImage(WIN_IMAGE_X_POSITION, WIN_IMAGE_Y_POSITION);
 		this.gameOverImage = new GameOverImage(LOSS_SCREEN_X_POSITION, LOSS_SCREEN_Y_POSISITION);
-		showHeartDisplay();
 	}
 	
 	public void showHeartDisplay() {
-		if(!root.getChildren().contains(heartDisplay.getContainer())){
-			root.getChildren().add(heartDisplay.getContainer());
-		}
+		Platform.runLater(() ->{
+			if(!root.getChildren().contains(heartDisplay.getContainer())){
+				root.getChildren().add(heartDisplay.getContainer());
+			}
+		});
 	}
 
 	public void showWinImage() {
@@ -35,16 +37,27 @@ public class LevelView {
 	}
 	
 	public void showGameOverImage() {
-		if(!root.getChildren().contains(gameOverImage)){
-			root.getChildren().add(gameOverImage);
-		}
+		Platform.runLater(() -> {
+			if(!root.getChildren().contains(gameOverImage)){
+				root.getChildren().add(gameOverImage);
+			}
+		});
 	}
 	
 	public void removeHearts(int heartsRemaining) {
-		int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
+		final int finalHeartsRemaining = heartsRemaining;
+		Platform.runLater(() -> {
+			int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
 
-			for (int i=0; i< currentNumberOfHearts; i++){
-				heartDisplay.removeHeart();
-		}
+			int adjustedHeartsRemaining = Math.max(0, finalHeartsRemaining);
+			int heartsToRemove = currentNumberOfHearts - adjustedHeartsRemaining;
+
+			for(int i=0; i<heartsToRemove; i++){
+				if(!heartDisplay.getContainer().getChildren().isEmpty()){
+					heartDisplay.removeHeart();
+				}
+			}
+
+		});
 	}
 }

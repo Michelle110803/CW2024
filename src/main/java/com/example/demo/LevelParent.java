@@ -64,6 +64,7 @@ public abstract class LevelParent extends Observable {
 	public Scene initializeScene() {
 		initializeBackground();
 		initializeFriendlyUnits();
+		levelView.showHeartDisplay();
 		return scene;
 	}
 
@@ -178,7 +179,7 @@ public abstract class LevelParent extends Observable {
 
 	private void handleCollisions(List<ActiveActorDestructible> actors1,
 			List<ActiveActorDestructible> actors2) {
-		Set<ActiveActorDestructible> damagedActors = new HashSet<>();
+		//Set<ActiveActorDestructible> damagedActors = new HashSet<>();
 
 		for (ActiveActorDestructible actor1 : actors1) {
 			for (ActiveActorDestructible actor2 : actors2) {
@@ -190,8 +191,8 @@ public abstract class LevelParent extends Observable {
 						loseGame();
 					}
 
-					damagedActors.add(actor1);
-					damagedActors.add(actor2);
+					//damagedActors.add(actor1);
+					//damagedActors.add(actor2);
 				}
 			}
 		}
