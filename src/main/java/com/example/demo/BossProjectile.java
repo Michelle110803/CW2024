@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import javafx.geometry.Bounds;
+import javafx.geometry.BoundingBox;
+
 public class BossProjectile extends Projectile {
 	
 	private static final String IMAGE_NAME = "fireball.png";
@@ -19,6 +22,15 @@ public class BossProjectile extends Projectile {
 	@Override
 	public void updateActor() {
 		updatePosition();
+	}
+
+	@Override
+	public Bounds getCustomBounds(){
+		double x = getLayoutX() + getTranslateX();
+		double y = getLayoutY() + getTranslateY();
+		double width = getBoundsInParent().getWidth();
+		double height = getBoundsInParent().getHeight();
+		return new BoundingBox(x, y, width, height);
 	}
 	
 }

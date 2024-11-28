@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
+
 public abstract class FighterPlane extends ActiveActorDestructible {
 
 	private int health;
@@ -34,5 +37,9 @@ public abstract class FighterPlane extends ActiveActorDestructible {
 	public int getHealth() {
 		return health;
 	}
-		
+
+	@Override
+	public abstract Bounds getCustomBounds();
+
+
 }

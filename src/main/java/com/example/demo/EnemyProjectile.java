@@ -1,9 +1,12 @@
 package com.example.demo;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+
 public class EnemyProjectile extends Projectile {
 	
 	private static final String IMAGE_NAME = "enemyFire.png";
-	private static final int IMAGE_HEIGHT = 50;
+	private static final int IMAGE_HEIGHT = 20;
 	private static final int HORIZONTAL_VELOCITY = -10;
 
 	public EnemyProjectile(double initialXPos, double initialYPos) {
@@ -18,6 +21,15 @@ public class EnemyProjectile extends Projectile {
 	@Override
 	public void updateActor() {
 		updatePosition();
+	}
+
+	@Override
+	public Bounds getCustomBounds(){
+		double x = getLayoutX() + getTranslateX();
+		double y = getLayoutY() + getTranslateY();
+		double width = getBoundsInParent().getWidth();
+		double height = getBoundsInParent().getHeight();
+		return new BoundingBox(x, y, width, height);
 	}
 
 

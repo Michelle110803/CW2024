@@ -14,7 +14,7 @@ import javafx.util.Duration;
 public abstract class LevelParent extends Observable {
 
 	private static final double SCREEN_HEIGHT_ADJUSTMENT = 150;
-	private static final int MILLISECOND_DELAY = 50;
+	private static final int MILLISECOND_DELAY = 40;
 	private final double screenHeight;
 	private final double screenWidth;
 	private final double enemyMaximumYPosition;
@@ -64,7 +64,6 @@ public abstract class LevelParent extends Observable {
 	public Scene initializeScene() {
 		initializeBackground();
 		initializeFriendlyUnits();
-		levelView.showHeartDisplay();
 		return scene;
 	}
 
@@ -106,15 +105,22 @@ public abstract class LevelParent extends Observable {
 		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP) user.moveUp();
-				if (kc == KeyCode.DOWN) user.moveDown();
-				if (kc == KeyCode.SPACE) fireProjectile();
+				switch (kc){
+					case UP -> user.moveUp();
+					case DOWN -> user.moveDown();
+					case LEFT -> user.moveLeft();
+					case RIGHT -> user.moveRight();
+					case SPACE -> fireProjectile();
+				}
 			}
 		});
 		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				KeyCode kc = e.getCode();
-				if (kc == KeyCode.UP || kc == KeyCode.DOWN) user.stop();
+				switch (kc){
+					case UP, DOWN -> user.stopVertical();
+					case LEFT, RIGHT -> user.stopHorizontal();
+				}
 			}
 		});
 		root.getChildren().add(background);
@@ -172,11 +178,20 @@ public abstract class LevelParent extends Observable {
 
 	private void handleCollisions(List<ActiveActorDestructible> actors1,
 			List<ActiveActorDestructible> actors2) {
-		for (ActiveActorDestructible actor : actors2) {
-			for (ActiveActorDestructible otherActor : actors1) {
-				if (actor.getBoundsInParent().intersects(otherActor.getBoundsInParent())) {
-					actor.takeDamage();
-					otherActor.takeDamage();
+		Set<ActiveActorDestructible> damagedActors = new HashSet<>();
+
+		for (ActiveActorDestructible actor1 : actors1) {
+			for (ActiveActorDestructible actor2 : actors2) {
+				if (actor1.getCustomBounds().intersects(actor2.getCustomBounds())) {
+					actor1.takeDamage();
+					actor2.takeDamage();
+
+					if(actor1 instanceof UserPlane && actor1.isDestroyed()){
+						loseGame();
+					}
+
+					damagedActors.add(actor1);
+					damagedActors.add(actor2);
 				}
 			}
 		}

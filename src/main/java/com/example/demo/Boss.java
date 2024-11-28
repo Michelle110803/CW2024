@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+
 import java.util.*;
 
 public class Boss extends FighterPlane {
@@ -43,6 +46,15 @@ public class Boss extends FighterPlane {
 		if (currentPosition < Y_POSITION_UPPER_BOUND || currentPosition > Y_POSITION_LOWER_BOUND) {
 			setTranslateY(initialTranslateY);
 		}
+	}
+
+	@Override
+	public Bounds getCustomBounds(){
+		double x = getLayoutX() + getTranslateX() + 10;
+		double y = getLayoutY() + getTranslateY() + 10;
+		double width = getBoundsInParent().getWidth() - 20;
+		double height = getBoundsInParent().getHeight() - 20;
+		return new BoundingBox(x, y, width, height);
 	}
 	
 	@Override
