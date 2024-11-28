@@ -46,18 +46,20 @@ public class LevelView {
 	
 	public void removeHearts(int heartsRemaining) {
 		final int finalHeartsRemaining = heartsRemaining;
-		Platform.runLater(() -> {
-			int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
+		if(heartsRemaining < heartDisplay.getContainer().getChildren().size()){
+			Platform.runLater(() -> {
+				int currentNumberOfHearts = heartDisplay.getContainer().getChildren().size();
 
-			int adjustedHeartsRemaining = Math.max(0, finalHeartsRemaining);
-			int heartsToRemove = currentNumberOfHearts - adjustedHeartsRemaining;
+				int adjustedHeartsRemaining = Math.max(0, finalHeartsRemaining);
+				int heartsToRemove = currentNumberOfHearts - adjustedHeartsRemaining;
 
-			for(int i=0; i<heartsToRemove; i++){
-				if(!heartDisplay.getContainer().getChildren().isEmpty()){
-					heartDisplay.removeHeart();
+				for(int i=0; i<heartsToRemove; i++){
+					if(!heartDisplay.getContainer().getChildren().isEmpty()){
+						heartDisplay.removeHeart();
+					}
 				}
-			}
 
-		});
+			});
+		}
 	}
 }

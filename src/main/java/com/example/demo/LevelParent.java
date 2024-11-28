@@ -179,20 +179,20 @@ public abstract class LevelParent extends Observable {
 
 	private void handleCollisions(List<ActiveActorDestructible> actors1,
 			List<ActiveActorDestructible> actors2) {
-		//Set<ActiveActorDestructible> damagedActors = new HashSet<>();
+		Set<ActiveActorDestructible> damagedActors = new HashSet<>();
 
-		for (ActiveActorDestructible actor1 : actors1) {
-			for (ActiveActorDestructible actor2 : actors2) {
-				if (actor1.getCustomBounds().intersects(actor2.getCustomBounds())) {
-					actor1.takeDamage();
-					actor2.takeDamage();
+		for (ActiveActorDestructible actor : actors2) {
+			for (ActiveActorDestructible otherActor : actors1) {
+				if (actor.getCustomBounds().intersects(otherActor.getCustomBounds())) {
+					actor.takeDamage();
+					otherActor.takeDamage();
 
-					if(actor1 instanceof UserPlane && actor1.isDestroyed()){
+					if(actor instanceof UserPlane && actor.isDestroyed()){
 						loseGame();
 					}
 
-					//damagedActors.add(actor1);
-					//damagedActors.add(actor2);
+					damagedActors.add(actor);
+					damagedActors.add(otherActor);
 				}
 			}
 		}

@@ -38,23 +38,9 @@ public class HeartDisplay {
 		}
 	}
 
-	//private ImageView createHeart(){
-		//try{
-			//Image heartImage = new Image(getClass().getResourceAsStream(HEART_IMAGE_NAME));
-			//ImageView heart = new ImageView(heartImage);
-			//heart.setFitHeight(HEART_HEIGHT);
-			//heart.setPreserveRatio(true);
-			//return heart;
-		//} catch (Exception e){
-			//System.out.println("heart image not found. pls check the path: " + HEART_IMAGE_NAME);
-			//e.printStackTrace();
-			//return null;
-		//}
-	//}
-
 	public void removeHeart() {
-		if (!container.getChildren().isEmpty()) {
-			container.getChildren().remove(INDEX_OF_FIRST_ITEM);
+		if (!getContainer().getChildren().isEmpty()) {
+			getContainer().getChildren().remove(getContainer().getChildren().size()-1);
 		}
 	}
 	
