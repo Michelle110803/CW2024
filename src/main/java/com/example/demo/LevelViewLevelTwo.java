@@ -11,13 +11,19 @@ public class LevelViewLevelTwo extends LevelView {
 	
 	public LevelViewLevelTwo(Group root, int heartsToDisplay) {
 		super(root, heartsToDisplay);
+		System.out.println("Initializing LevelViewLevelTwo");
 		this.root = root;
-		this.shieldImage = new ShieldImage(SHIELD_X_POSITION, SHIELD_Y_POSITION);
+		this.shieldImage = new ShieldImage(SHIELD_X_POSITION,SHIELD_Y_POSITION);
 		addImagesToRoot();
 	}
 	
 	private void addImagesToRoot() {
-		root.getChildren().addAll(shieldImage);
+		try{
+			root.getChildren().add(shieldImage);
+		} catch(Exception e){
+			System.out.println("Error adding shield image to root");
+			e.printStackTrace();
+		}
 	}
 	
 	public void showShield() {

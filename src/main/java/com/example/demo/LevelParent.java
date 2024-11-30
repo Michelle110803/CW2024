@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,6 +45,11 @@ public abstract class LevelParent extends Observable {
 		this.enemyProjectiles = new ArrayList<>();
 
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
+		if(this.background.getImage().isError()){
+			System.out.println("error loading background image: " + backgroundImageName);
+		}else{
+			System.out.println("Successfully loaded background image: " +backgroundImageName);
+		}
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
@@ -68,12 +74,17 @@ public abstract class LevelParent extends Observable {
 		return scene;
 	}
 
-	public void startGame() {
+	public Scene getScene(){
+		return scene;
+	}
+
+	public void startGame(){
 		background.requestFocus();
 		timeline.play();
 	}
 
 	public void goToNextLevel(String levelName) {
+		System.out.println("Transitioning to level: " + levelName);
 		setChanged();
 		notifyObservers(levelName);
 	}
@@ -106,7 +117,7 @@ public abstract class LevelParent extends Observable {
 		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				KeyCode kc = e.getCode();
-				switch (kc){
+				switch (kc) {
 					case UP -> user.moveUp();
 					case DOWN -> user.moveDown();
 					case LEFT -> user.moveLeft();
@@ -118,7 +129,7 @@ public abstract class LevelParent extends Observable {
 		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent e) {
 				KeyCode kc = e.getCode();
-				switch (kc){
+				switch (kc) {
 					case UP, DOWN -> user.stopVertical();
 					case LEFT, RIGHT -> user.stopHorizontal();
 				}
@@ -218,7 +229,11 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private boolean enemyHasPenetratedDefenses(ActiveActorDestructible enemy) {
-		return Math.abs(enemy.getTranslateX()) > screenWidth;
+		if(enemy instanceof EnemyProjectile){
+			return enemy.getX() <= 0;
+		}
+
+		return false;
 	}
 
 	protected void winGame() {
@@ -254,6 +269,10 @@ public abstract class LevelParent extends Observable {
 
 	protected double getScreenWidth() {
 		return screenWidth;
+	}
+
+	protected double getScreenHeight(){
+		return screenHeight;
 	}
 
 	protected boolean userIsDestroyed() {

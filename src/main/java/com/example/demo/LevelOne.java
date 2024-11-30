@@ -1,5 +1,6 @@
 package com.example.demo;
 
+
 public class LevelOne extends LevelParent {
 	
 	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background1.jpg";
@@ -16,11 +17,15 @@ public class LevelOne extends LevelParent {
 	@Override
 	protected void checkIfGameOver() {
 		if (userIsDestroyed()) {
+			System.out.println("Player destroyed. ending game");
 			loseGame();
-		}
-		else if (userHasReachedKillTarget())
+		} else if (userHasReachedKillTarget()) {
+			System.out.println("Kill target reached. Advancing to next level");
 			goToNextLevel(NEXT_LEVEL);
+
+		}
 	}
+
 
 	@Override
 	protected void initializeFriendlyUnits() {
