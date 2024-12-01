@@ -11,12 +11,13 @@ import java.util.*;
 public class Boss extends FighterPlane {
 
 	private static final String IMAGE_NAME = "bossplane.png";
-	private static final double INITIAL_X_POSITION = 1000.0;
+	private static final double INITIAL_X_POSITION = 1000;
 	private static final double INITIAL_Y_POSITION = 400.0;
 	private static final double PROJECTILE_Y_POSITION_OFFSET = 75.0;
 	private static final double BOSS_FIRE_RATE = .04;
-	private static final double BOSS_SHIELD_PROBABILITY = .002;
-	private static final int IMAGE_HEIGHT = 300;
+	private static final double BOSS_SHIELD_PROBABILITY = 0.01;
+	private static final double SHIELD_DEACTIVATION_PROBABILITY = 0.05;
+	private static final int IMAGE_HEIGHT = 50;
 	private static final int VERTICAL_VELOCITY = 8;
 	private static final int HEALTH = 5;
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
@@ -25,8 +26,13 @@ public class Boss extends FighterPlane {
 	private static final int Y_POSITION_UPPER_BOUND = -100;
 	private static final int Y_POSITION_LOWER_BOUND = 475;
 	private static final int MAX_FRAMES_WITH_SHIELD = 500;
+	private static final int SHIELD_COOLDOWN_DURATION = 300;
+	private static final int MIN_TIME_BETWEEN_ACTIVATIONS = 100;
+	private int framesSinceLastActivation = 0;
 	private final List<Integer> movePattern;
 	private boolean isShielded;
+	private boolean shieldCooldown = false;
+	private int shieldTimer = 0;
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
@@ -104,16 +110,34 @@ public class Boss extends FighterPlane {
 	}
 
 	private void updateShield() {
-		if (isShielded){
+		framesSinceLastActivation++;
+
+		if (isShielded) {
 			framesWithShieldActivated++;
-			levelView.updateShieldPosition(getLayoutX(), getLayoutY());
-			System.out.println("Shield position updated to: X= " + getLayoutX() + ", Y =" + getLayoutY());
+			System.out.println("Shield is active. Frame count: " + framesWithShieldActivated);
+
+			if(Math.random() < SHIELD_DEACTIVATION_PROBABILITY){
+				deactivateShield();
+			}
+		} else if (!shieldCooldown && framesSinceLastActivation >= MIN_TIME_BETWEEN_ACTIVATIONS) {
+			if(Math.random() < BOSS_SHIELD_PROBABILITY){
+				activateShield();
+				framesSinceLastActivation = 0;
+			}
 		}
-		else if (shieldShouldBeActivated()) {
-			activateShield();
+
+		if(shieldCooldown){
+			shieldTimer++;
+			System.out.println("Shield is in cooldown. timer: " + shieldTimer);
+
+			if(shieldTimer >= SHIELD_COOLDOWN_DURATION){
+				shieldCooldown = false;
+				shieldTimer = 0;
+				System.out.println("Shield cooldown over. ready to activate");
+			}
 		}
-		if (shieldExhausted()) deactivateShield();
 	}
+
 
 	private int getNextMove() {
 		int currentMove = movePattern.get(indexOfCurrentMove);
@@ -147,13 +171,19 @@ public class Boss extends FighterPlane {
 
 	private void activateShield() {
 		isShielded = true;
-		levelView.showShield();
+		if(levelView != null){
+			levelView.showShield();
+		}
 		System.out.println("Shield activated");
 	}
 
 	private void deactivateShield() {
 		isShielded = false;
-		levelView.hideShield();
+		shieldCooldown = true;
+		shieldTimer = 0;
+		if(levelView != null){
+			levelView.hideShield();
+		}
 		System.out.println("Shield deactivated");
 	}
 

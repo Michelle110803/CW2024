@@ -6,6 +6,8 @@ public class LevelViewLevelTwo extends LevelView {
 
 	private static final int SHIELD_X_POSITION = 1150;
 	private static final int SHIELD_Y_POSITION = 500;
+	private static final int OFFSET_X = -50;
+	private static final int OFFSET_Y = -30;
 	private final Group root;
 	private final ShieldImage shieldImage;
 	
@@ -40,8 +42,8 @@ public class LevelViewLevelTwo extends LevelView {
 	}
 
 	public void updateShieldPosition(double x, double y){
-		shieldImage.setLayoutX(x);
-		shieldImage.setLayoutY(y);
+		shieldImage.setLayoutX(x + OFFSET_X);
+		shieldImage.setLayoutY(y + OFFSET_Y);
 		shieldImage.toFront();
 		System.out.println("Shield position updated: X= " + x + ",Y= " + y);
 	}
