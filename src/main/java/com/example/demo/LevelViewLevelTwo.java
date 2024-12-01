@@ -33,5 +33,6 @@ public class LevelViewLevelTwo extends LevelView {
 	public void hideShield() {
 		shieldImage.hideShield();
 	}
+	
 
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.example.demo.controller.Controller;
 import javafx.animation.*;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -30,9 +31,11 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> enemyUnits;
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
+	private final List<Controller> observers = new ArrayList<>();
 	
 	private int currentNumberOfEnemies;
-	private LevelView levelView;
+	private final LevelView levelView;
+
 
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
 		this.root = new Group();
@@ -45,11 +48,6 @@ public abstract class LevelParent extends Observable {
 		this.enemyProjectiles = new ArrayList<>();
 
 		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
-		if(this.background.getImage().isError()){
-			System.out.println("error loading background image: " + backgroundImageName);
-		}else{
-			System.out.println("Successfully loaded background image: " +backgroundImageName);
-		}
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
@@ -74,20 +72,18 @@ public abstract class LevelParent extends Observable {
 		return scene;
 	}
 
-	public Scene getScene(){
-		return scene;
-	}
 
 	public void startGame(){
 		background.requestFocus();
 		timeline.play();
 	}
 
-	public void goToNextLevel(String levelName) {
-		System.out.println("Transitioning to level: " + levelName);
+	public void goToNextLevel(String LevelName) {
 		setChanged();
-		notifyObservers(levelName);
+		notifyObservers(LevelName);
+		timeline.stop();
 	}
+
 
 	private void updateScene() {
 		spawnEnemyUnits();
