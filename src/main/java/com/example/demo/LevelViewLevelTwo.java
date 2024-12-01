@@ -11,7 +11,6 @@ public class LevelViewLevelTwo extends LevelView {
 	
 	public LevelViewLevelTwo(Group root, int heartsToDisplay) {
 		super(root, heartsToDisplay);
-		System.out.println("Initializing LevelViewLevelTwo");
 		this.root = root;
 		this.shieldImage = new ShieldImage(SHIELD_X_POSITION,SHIELD_Y_POSITION);
 		addImagesToRoot();
@@ -19,7 +18,11 @@ public class LevelViewLevelTwo extends LevelView {
 	
 	private void addImagesToRoot() {
 		try{
-			root.getChildren().add(shieldImage);
+			if(!root.getChildren().contains(shieldImage)){
+				root.getChildren().add(shieldImage);
+				System.out.println("ShieldImage added to the root");
+			}
+			//root.getChildren().add(shieldImage);
 		} catch(Exception e){
 			System.out.println("Error adding shield image to root");
 			e.printStackTrace();
@@ -28,11 +31,20 @@ public class LevelViewLevelTwo extends LevelView {
 	
 	public void showShield() {
 		shieldImage.showShield();
+		shieldImage.toFront();
+		System.out.println("Shield brought to the front");
 	}
 
 	public void hideShield() {
 		shieldImage.hideShield();
 	}
-	
+
+	public void updateShieldPosition(double x, double y){
+		shieldImage.setLayoutX(x);
+		shieldImage.setLayoutY(y);
+		shieldImage.toFront();
+		System.out.println("Shield position updated: X= " + x + ",Y= " + y);
+	}
+
 
 }

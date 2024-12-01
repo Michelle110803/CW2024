@@ -16,7 +16,7 @@ public class LevelTwo extends LevelParent {
 
 	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background2.jpg";
 	private static final int PLAYER_INITIAL_HEALTH = 5;
-	private final Boss boss;
+	private  Boss boss;
 	private LevelViewLevelTwo levelView;
 	private boolean levelTransitioned = false;
 	private boolean isBossSpawned = false;
@@ -27,12 +27,14 @@ public class LevelTwo extends LevelParent {
 
 	public LevelTwo(double screenHeight, double screenWidth) {
 		super(BACKGROUND_IMAGE_NAME, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
-		boss = new Boss();
+		levelView = (LevelViewLevelTwo) instantiateLevelView();
+		boss = new Boss(levelView);
 	}
 
 	@Override
 	protected void initializeFriendlyUnits() {
 		getRoot().getChildren().add(getUser());
+		//getRoot().getChildren().add(boss.shieldImage);
 	}
 
 	@Override
@@ -48,8 +50,9 @@ public class LevelTwo extends LevelParent {
 
 	@Override
 	protected void spawnEnemyUnits() {
-		if (getCurrentNumberOfEnemies() == 0 && !boss.isDestroyed() && !isBossSpawned) {
+		if (getCurrentNumberOfEnemies() == 0 && !isBossSpawned) {
 			System.out.println("Spawning boss enemy");
+			boss = new Boss((LevelViewLevelTwo) levelView);
 			addEnemyUnit(boss);
 			isBossSpawned = true;
 		}
@@ -57,9 +60,7 @@ public class LevelTwo extends LevelParent {
 
 	@Override
 	protected LevelView instantiateLevelView() {
-		levelView = new LevelViewLevelTwo(getRoot(), PLAYER_INITIAL_HEALTH);
-		System.out.println("LevelView for leveltwo initialized");
-		return levelView;
+		return new LevelViewLevelTwo(getRoot(), PLAYER_INITIAL_HEALTH);
 	}
 
 }

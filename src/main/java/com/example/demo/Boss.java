@@ -30,15 +30,19 @@ public class Boss extends FighterPlane {
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
+	private ShieldImage shieldImage;
+	private LevelViewLevelTwo levelView;
 
-	public Boss() {
+	public Boss(LevelViewLevelTwo levelView) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
+		this.levelView = levelView;
 		movePattern = new ArrayList<>();
 		consecutiveMovesInSameDirection = 0;
 		indexOfCurrentMove = 0;
 		framesWithShieldActivated = 0;
 		isShielded = false;
 		initializeMovePattern();
+		//shieldImage = new ShieldImage(getLayoutX(), getLayoutY());
 	}
 
 	@Override
@@ -46,8 +50,10 @@ public class Boss extends FighterPlane {
 		double initialTranslateY = getTranslateY();
 		moveVertically(getNextMove());
 		double currentPosition = getLayoutY() + getTranslateY();
+		System.out.println("Boss moving to: Y=" + currentPosition);
 		if (currentPosition < Y_POSITION_UPPER_BOUND || currentPosition > Y_POSITION_LOWER_BOUND) {
 			setTranslateY(initialTranslateY);
+			System.out.println("Boss movement restricted within bounds");
 		}
 	}
 
@@ -64,6 +70,13 @@ public class Boss extends FighterPlane {
 	public void updateActor() {
 		updatePosition();
 		updateShield();
+
+		if(levelView != null){
+			double bossX = getLayoutX() + getTranslateX();
+			double bossY = getLayoutY() + getTranslateY();
+			levelView.updateShieldPosition(bossX,bossY);
+			System.out.println("Boss position: X= " + getLayoutX() + ",Y=" + getLayoutY());
+		}
 	}
 
 	@Override
@@ -91,8 +104,14 @@ public class Boss extends FighterPlane {
 	}
 
 	private void updateShield() {
-		if (isShielded) framesWithShieldActivated++;
-		else if (shieldShouldBeActivated()) activateShield();	
+		if (isShielded){
+			framesWithShieldActivated++;
+			levelView.updateShieldPosition(getLayoutX(), getLayoutY());
+			System.out.println("Shield position updated to: X= " + getLayoutX() + ", Y =" + getLayoutY());
+		}
+		else if (shieldShouldBeActivated()) {
+			activateShield();
+		}
 		if (shieldExhausted()) deactivateShield();
 	}
 
@@ -128,11 +147,14 @@ public class Boss extends FighterPlane {
 
 	private void activateShield() {
 		isShielded = true;
+		levelView.showShield();
+		System.out.println("Shield activated");
 	}
 
 	private void deactivateShield() {
 		isShielded = false;
-		framesWithShieldActivated = 0;
+		levelView.hideShield();
+		System.out.println("Shield deactivated");
 	}
 
 }
