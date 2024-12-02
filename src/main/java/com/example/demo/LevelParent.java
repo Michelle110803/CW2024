@@ -177,7 +177,25 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void handleUserProjectileCollisions() {
-		handleCollisions(userProjectiles, enemyUnits);
+		for(ActiveActorDestructible projectile : userProjectiles){
+			for(ActiveActorDestructible enemy : enemyUnits){
+				if(projectile.getCustomBounds().intersects(enemy.getCustomBounds())){
+					if(enemy instanceof Boss){
+						Boss boss = (Boss) enemy;
+						if(boss.isShielded()){
+							System.out.println("Projectile hit shield. boss takes no damage");
+						} else{
+							boss.takeDamage();
+							System.out.println("Projectile hit boss. health reduced, remaining health: " + boss.getHealth());
+						}
+					} else{
+						enemy.takeDamage();
+					}
+					projectile.destroy();
+				}
+			}
+		}
+		//handleCollisions(userProjectiles, enemyUnits);
 	}
 
 	private void handleEnemyProjectileCollisions() {

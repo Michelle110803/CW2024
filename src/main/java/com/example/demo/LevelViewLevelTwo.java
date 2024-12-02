@@ -48,5 +48,9 @@ public class LevelViewLevelTwo extends LevelView {
 		System.out.println("Shield position updated: X= " + x + ",Y= " + y);
 	}
 
+	public boolean isShieldVisible(){
+		return shieldImage.isVisible();
+	}
+
 
 }

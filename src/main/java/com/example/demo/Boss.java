@@ -16,7 +16,7 @@ public class Boss extends FighterPlane {
 	private static final double PROJECTILE_Y_POSITION_OFFSET = 75.0;
 	private static final double BOSS_FIRE_RATE = .04;
 	private static final double BOSS_SHIELD_PROBABILITY = 0.01;
-	private static final double SHIELD_DEACTIVATION_PROBABILITY = 0.05;
+	private static final double SHIELD_DEACTIVATION_PROBABILITY = 0.01;
 	private static final int IMAGE_HEIGHT = 50;
 	private static final int VERTICAL_VELOCITY = 8;
 	private static final int HEALTH = 5;
@@ -25,12 +25,12 @@ public class Boss extends FighterPlane {
 	private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
 	private static final int Y_POSITION_UPPER_BOUND = -100;
 	private static final int Y_POSITION_LOWER_BOUND = 475;
-	private static final int MAX_FRAMES_WITH_SHIELD = 500;
+	private static final int MAX_FRAMES_WITH_SHIELD = 800;
 	private static final int SHIELD_COOLDOWN_DURATION = 300;
 	private static final int MIN_TIME_BETWEEN_ACTIVATIONS = 100;
 	private int framesSinceLastActivation = 0;
 	private final List<Integer> movePattern;
-	private boolean isShielded;
+	private boolean isShielded = false;
 	private boolean shieldCooldown = false;
 	private int shieldTimer = 0;
 	private int consecutiveMovesInSameDirection;
@@ -48,7 +48,6 @@ public class Boss extends FighterPlane {
 		framesWithShieldActivated = 0;
 		isShielded = false;
 		initializeMovePattern();
-		//shieldImage = new ShieldImage(getLayoutX(), getLayoutY());
 	}
 
 	@Override
@@ -57,9 +56,13 @@ public class Boss extends FighterPlane {
 		moveVertically(getNextMove());
 		double currentPosition = getLayoutY() + getTranslateY();
 		System.out.println("Boss moving to: Y=" + currentPosition);
-		if (currentPosition < Y_POSITION_UPPER_BOUND || currentPosition > Y_POSITION_LOWER_BOUND) {
-			setTranslateY(initialTranslateY);
+		if (currentPosition < 0) {
+			setTranslateY(-getLayoutY());
 			System.out.println("Boss movement restricted within bounds");
+		} else if (currentPosition + IMAGE_HEIGHT > Y_POSITION_LOWER_BOUND) {
+			setTranslateY(Y_POSITION_LOWER_BOUND - getLayoutY() - IMAGE_HEIGHT);
+			System.out.println("Boss movement restricted: too low");
+
 		}
 	}
 
@@ -92,11 +95,12 @@ public class Boss extends FighterPlane {
 	
 	@Override
 	public void takeDamage() {
-		if (!isShielded) {
-			super.takeDamage();
-			System.out.println("Boss health: " + getHealth());
-		} else{
+		if (isShielded) {
 			System.out.println("Damage blocked by shield");
+		} else{
+			System.out.println("Boss not shielded taking damage.");
+			super.takeDamage();
+			System.out.println("Boss took damage. remaining health : " + getHealth());
 		}
 	}
 
@@ -110,30 +114,39 @@ public class Boss extends FighterPlane {
 	}
 
 	private void updateShield() {
-		framesSinceLastActivation++;
+		System.out.println("Shield status: " + (isShielded ? "Active" : "Inactive") + ", Visibility: " + (levelView != null && levelView.isShieldVisible()? "Visible" : "Hidden"));
+		//framesSinceLastActivation++;
 
 		if (isShielded) {
 			framesWithShieldActivated++;
-			System.out.println("Shield is active. Frame count: " + framesWithShieldActivated);
+			//System.out.println("Shield is active. Frame count: " + framesWithShieldActivated);
 
 			if(Math.random() < SHIELD_DEACTIVATION_PROBABILITY){
 				deactivateShield();
 			}
-		} else if (!shieldCooldown && framesSinceLastActivation >= MIN_TIME_BETWEEN_ACTIVATIONS) {
+		} else if (!shieldCooldown) {
 			if(Math.random() < BOSS_SHIELD_PROBABILITY){
 				activateShield();
-				framesSinceLastActivation = 0;
+				//framesSinceLastActivation = 0;
 			}
 		}
 
 		if(shieldCooldown){
 			shieldTimer++;
-			System.out.println("Shield is in cooldown. timer: " + shieldTimer);
+			//System.out.println("Shield is in cooldown. timer: " + shieldTimer);
 
 			if(shieldTimer >= SHIELD_COOLDOWN_DURATION){
 				shieldCooldown = false;
 				shieldTimer = 0;
 				System.out.println("Shield cooldown over. ready to activate");
+			}
+		}
+
+		if(levelView != null){
+			if(isShielded){
+				levelView.showShield();
+			} else{
+				levelView.hideShield();
 			}
 		}
 	}
@@ -169,6 +182,10 @@ public class Boss extends FighterPlane {
 		return framesWithShieldActivated == MAX_FRAMES_WITH_SHIELD;
 	}
 
+	public boolean isShielded(){
+		return isShielded;
+	}
+
 	private void activateShield() {
 		isShielded = true;
 		if(levelView != null){
@@ -179,8 +196,8 @@ public class Boss extends FighterPlane {
 
 	private void deactivateShield() {
 		isShielded = false;
-		shieldCooldown = true;
-		shieldTimer = 0;
+		//shieldCooldown = true;
+		//shieldTimer = 0;
 		if(levelView != null){
 			levelView.hideShield();
 		}
