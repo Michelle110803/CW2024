@@ -1,10 +1,10 @@
 package com.example.demo;
 
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.net.URL;
 
-import com.example.demo.controller.Controller;
+
 import javafx.animation.*;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -22,7 +22,7 @@ public abstract class LevelParent extends Observable {
 	private final double enemyMaximumYPosition;
 
 	private final Group root;
-	private final Timeline timeline;
+	protected final Timeline timeline;
 	private final UserPlane user;
 	private final Scene scene;
 	private final ImageView background;
@@ -31,11 +31,9 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> enemyUnits;
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
-	private final List<Controller> observers = new ArrayList<>();
-	
+
 	private int currentNumberOfEnemies;
 	private final LevelView levelView;
-
 
 	public LevelParent(String backgroundImageName, double screenHeight, double screenWidth, int playerInitialHealth) {
 		this.root = new Group();
@@ -47,7 +45,13 @@ public abstract class LevelParent extends Observable {
 		this.userProjectiles = new ArrayList<>();
 		this.enemyProjectiles = new ArrayList<>();
 
-		this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
+		// Load background image safely
+		URL resourceURL = getClass().getResource(backgroundImageName);
+		if (resourceURL == null) {
+			throw new IllegalArgumentException("Background image not found: " + backgroundImageName);
+		}
+		this.background = new ImageView(new Image(resourceURL.toExternalForm()));
+
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
 		this.enemyMaximumYPosition = screenHeight - SCREEN_HEIGHT_ADJUSTMENT;
@@ -72,18 +76,21 @@ public abstract class LevelParent extends Observable {
 		return scene;
 	}
 
-
-	public void startGame(){
+	public void startGame() {
 		background.requestFocus();
 		timeline.play();
 	}
 
-	public void goToNextLevel(String LevelName) {
-		setChanged();
-		notifyObservers(LevelName);
-		timeline.stop();
+	public void goToNextLevel(String levelName) {
+		if (levelName != null) {
+			setChanged();
+			notifyObservers(levelName);
+			System.out.println("Notifying controller to transition to: " + levelName);
+			timeline.stop();
+		} else {
+			System.err.println("Level name is null; cannot transition to the next level.");
+		}
 	}
-
 
 	private void updateScene() {
 		spawnEnemyUnits();
@@ -110,25 +117,19 @@ public abstract class LevelParent extends Observable {
 		background.setFocusTraversable(true);
 		background.setFitHeight(screenHeight);
 		background.setFitWidth(screenWidth);
-		background.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				switch (kc) {
-					case UP -> user.moveUp();
-					case DOWN -> user.moveDown();
-					case LEFT -> user.moveLeft();
-					case RIGHT -> user.moveRight();
-					case SPACE -> fireProjectile();
-				}
+		background.setOnKeyPressed(e -> {
+			switch (e.getCode()) {
+				case UP -> user.moveUp();
+				case DOWN -> user.moveDown();
+				case LEFT -> user.moveLeft();
+				case RIGHT -> user.moveRight();
+				case SPACE -> fireProjectile();
 			}
 		});
-		background.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			public void handle(KeyEvent e) {
-				KeyCode kc = e.getCode();
-				switch (kc) {
-					case UP, DOWN -> user.stopVertical();
-					case LEFT, RIGHT -> user.stopHorizontal();
-				}
+		background.setOnKeyReleased(e -> {
+			switch (e.getCode()) {
+				case UP, DOWN -> user.stopVertical();
+				case LEFT, RIGHT -> user.stopHorizontal();
 			}
 		});
 		root.getChildren().add(background);
@@ -141,8 +142,14 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void generateEnemyFire() {
-		enemyUnits.forEach(enemy -> spawnEnemyProjectile(((FighterPlane) enemy).fireProjectile()));
+		enemyUnits.stream()
+				.filter(enemy -> enemy instanceof FighterPlane) // Filter only FighterPlanes
+				.map(enemy -> ((FighterPlane) enemy).fireProjectile())
+				.filter(Objects::nonNull) // Ignore null projectiles
+				.forEach(this::spawnEnemyProjectile);
 	}
+
+
 
 	private void spawnEnemyProjectile(ActiveActorDestructible projectile) {
 		if (projectile != null) {
@@ -152,13 +159,17 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void updateActors() {
-		friendlyUnits.forEach(plane -> plane.updateActor());
-		enemyUnits.forEach(enemy -> enemy.updateActor());
-		userProjectiles.forEach(projectile -> projectile.updateActor());
-		enemyProjectiles.forEach(projectile -> projectile.updateActor());
+		friendlyUnits.forEach(ActiveActorDestructible::updateActor);
+		enemyUnits.removeIf(enemy -> enemy.getLayoutX() < -50); // Remove enemies off-screen
+		enemyUnits.forEach(ActiveActorDestructible::updateActor);
+		userProjectiles.removeIf(projectile -> projectile.getLayoutX() > getScreenWidth() + 50); // Remove off-screen projectiles
+		userProjectiles.forEach(ActiveActorDestructible::updateActor);
+		enemyProjectiles.removeIf(projectile -> projectile.getLayoutX() < -50); // Remove enemy projectiles off-screen
+		enemyProjectiles.forEach(ActiveActorDestructible::updateActor);
 	}
 
-	private void removeAllDestroyedActors() {
+
+	protected void removeAllDestroyedActors() {
 		removeDestroyedActors(friendlyUnits);
 		removeDestroyedActors(enemyUnits);
 		removeDestroyedActors(userProjectiles);
@@ -166,11 +177,13 @@ public abstract class LevelParent extends Observable {
 	}
 
 	private void removeDestroyedActors(List<ActiveActorDestructible> actors) {
-		List<ActiveActorDestructible> destroyedActors = actors.stream().filter(actor -> actor.isDestroyed())
+		List<ActiveActorDestructible> destroyedActors = actors.stream()
+				.filter(ActiveActorDestructible::isDestroyed)
 				.collect(Collectors.toList());
-		root.getChildren().removeAll(destroyedActors);
-		actors.removeAll(destroyedActors);
+		root.getChildren().removeAll(destroyedActors); // Remove from scene
+		actors.removeAll(destroyedActors);             // Remove from list
 	}
+
 
 	private void handlePlaneCollisions() {
 		handleCollisions(friendlyUnits, enemyUnits);
@@ -198,12 +211,13 @@ public abstract class LevelParent extends Observable {
 		//handleCollisions(userProjectiles, enemyUnits);
 	}
 
+
 	private void handleEnemyProjectileCollisions() {
 		handleCollisions(enemyProjectiles, friendlyUnits);
 	}
 
 	private void handleCollisions(List<ActiveActorDestructible> actors1,
-			List<ActiveActorDestructible> actors2) {
+								  List<ActiveActorDestructible> actors2) {
 		Set<ActiveActorDestructible> damagedActors = new HashSet<>();
 
 		for (ActiveActorDestructible actor : actors2) {
@@ -255,6 +269,7 @@ public abstract class LevelParent extends Observable {
 		levelView.showWinImage();
 	}
 
+
 	protected void loseGame() {
 		timeline.stop();
 		levelView.showGameOverImage();
@@ -268,8 +283,12 @@ public abstract class LevelParent extends Observable {
 		return root;
 	}
 
-	protected int getCurrentNumberOfEnemies() {
-		return enemyUnits.size();
+	protected double getScreenWidth() {
+		return screenWidth;
+	}
+
+	protected double getScreenHeight() {
+		return screenHeight;
 	}
 
 	protected void addEnemyUnit(ActiveActorDestructible enemy) {
@@ -277,24 +296,21 @@ public abstract class LevelParent extends Observable {
 		root.getChildren().add(enemy);
 	}
 
+	private void updateNumberOfEnemies() {
+		currentNumberOfEnemies = enemyUnits.size();
+	}
+
+	protected int getCurrentNumberOfEnemies() {
+		return enemyUnits.size();
+	}
+
+
 	protected double getEnemyMaximumYPosition() {
 		return enemyMaximumYPosition;
 	}
 
-	protected double getScreenWidth() {
-		return screenWidth;
-	}
-
-	protected double getScreenHeight(){
-		return screenHeight;
-	}
-
 	protected boolean userIsDestroyed() {
 		return user.isDestroyed();
-	}
-
-	private void updateNumberOfEnemies() {
-		currentNumberOfEnemies = enemyUnits.size();
 	}
 
 }

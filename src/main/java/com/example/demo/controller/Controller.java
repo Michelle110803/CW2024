@@ -47,15 +47,24 @@ public class Controller implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		String levelName = (String) arg1;
-		try {
-			goToLevel((String) arg1);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		if (arg1 instanceof String) { // Ensure the argument is a valid String
+			String levelName = (String) arg1;
+			System.out.println("Controller notified to transition to: " + levelName);
+			try {
+				goToLevel(levelName); // Transition to the specified level
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException |
+					 InstantiationException | IllegalAccessException | IllegalArgumentException |
+					 InvocationTargetException e) {
+				e.printStackTrace();
 				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText(e.getClass().toString());
+				alert.setContentText("Error: " + e.getMessage());
 				alert.show();
 			}
+		} else {
+			System.err.println("Unexpected update notification received: " + arg1);
+		}
 	}
+
 
 
 	private void handleError(String message, Throwable error) {

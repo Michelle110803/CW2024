@@ -55,13 +55,10 @@ public class Boss extends FighterPlane {
 		double initialTranslateY = getTranslateY();
 		moveVertically(getNextMove());
 		double currentPosition = getLayoutY() + getTranslateY();
-		System.out.println("Boss moving to: Y=" + currentPosition);
 		if (currentPosition < 0) {
 			setTranslateY(-getLayoutY());
-			System.out.println("Boss movement restricted within bounds");
 		} else if (currentPosition + IMAGE_HEIGHT > Y_POSITION_LOWER_BOUND) {
 			setTranslateY(Y_POSITION_LOWER_BOUND - getLayoutY() - IMAGE_HEIGHT);
-			System.out.println("Boss movement restricted: too low");
 
 		}
 	}
@@ -84,7 +81,6 @@ public class Boss extends FighterPlane {
 			double bossX = getLayoutX() + getTranslateX();
 			double bossY = getLayoutY() + getTranslateY();
 			levelView.updateShieldPosition(bossX,bossY);
-			System.out.println("Boss position: X= " + getLayoutX() + ",Y=" + getLayoutY());
 		}
 	}
 
@@ -96,11 +92,8 @@ public class Boss extends FighterPlane {
 	@Override
 	public void takeDamage() {
 		if (isShielded) {
-			System.out.println("Damage blocked by shield");
 		} else{
-			System.out.println("Boss not shielded taking damage.");
 			super.takeDamage();
-			System.out.println("Boss took damage. remaining health : " + getHealth());
 		}
 	}
 
@@ -114,12 +107,9 @@ public class Boss extends FighterPlane {
 	}
 
 	private void updateShield() {
-		System.out.println("Shield status: " + (isShielded ? "Active" : "Inactive") + ", Visibility: " + (levelView != null && levelView.isShieldVisible()? "Visible" : "Hidden"));
-		//framesSinceLastActivation++;
 
 		if (isShielded) {
 			framesWithShieldActivated++;
-			//System.out.println("Shield is active. Frame count: " + framesWithShieldActivated);
 
 			if(Math.random() < SHIELD_DEACTIVATION_PROBABILITY){
 				deactivateShield();
@@ -127,18 +117,15 @@ public class Boss extends FighterPlane {
 		} else if (!shieldCooldown) {
 			if(Math.random() < BOSS_SHIELD_PROBABILITY){
 				activateShield();
-				//framesSinceLastActivation = 0;
 			}
 		}
 
 		if(shieldCooldown){
 			shieldTimer++;
-			//System.out.println("Shield is in cooldown. timer: " + shieldTimer);
 
 			if(shieldTimer >= SHIELD_COOLDOWN_DURATION){
 				shieldCooldown = false;
 				shieldTimer = 0;
-				System.out.println("Shield cooldown over. ready to activate");
 			}
 		}
 
@@ -191,7 +178,6 @@ public class Boss extends FighterPlane {
 		if(levelView != null){
 			levelView.showShield();
 		}
-		System.out.println("Shield activated");
 	}
 
 	private void deactivateShield() {
@@ -201,7 +187,6 @@ public class Boss extends FighterPlane {
 		if(levelView != null){
 			levelView.hideShield();
 		}
-		System.out.println("Shield deactivated");
 	}
 
 }

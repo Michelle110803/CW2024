@@ -32,9 +32,13 @@ public class LevelView {
 	}
 
 	public void showWinImage() {
-		root.getChildren().add(winImage);
-		winImage.showWinImage();
+		if (!root.getChildren().contains(winImage)) { // Check if the winImage is already in the children list
+			root.getChildren().add(winImage);
+		} else {
+			System.out.println("Win image already added, skipping duplicate addition.");
+		}
 	}
+
 	
 	public void showGameOverImage() {
 		Platform.runLater(() -> {

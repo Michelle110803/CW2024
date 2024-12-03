@@ -22,11 +22,8 @@ public class LevelViewLevelTwo extends LevelView {
 		try{
 			if(!root.getChildren().contains(shieldImage)){
 				root.getChildren().add(shieldImage);
-				System.out.println("ShieldImage added to the root");
 			}
-			//root.getChildren().add(shieldImage);
 		} catch(Exception e){
-			System.out.println("Error adding shield image to root");
 			e.printStackTrace();
 		}
 	}
@@ -34,7 +31,6 @@ public class LevelViewLevelTwo extends LevelView {
 	public void showShield() {
 		shieldImage.showShield();
 		shieldImage.toFront();
-		System.out.println("Shield brought to the front");
 	}
 
 	public void hideShield() {
@@ -45,7 +41,6 @@ public class LevelViewLevelTwo extends LevelView {
 		shieldImage.setLayoutX(x + OFFSET_X);
 		shieldImage.setLayoutY(y + OFFSET_Y);
 		shieldImage.toFront();
-		System.out.println("Shield position updated: X= " + x + ",Y= " + y);
 	}
 
 	public boolean isShieldVisible(){

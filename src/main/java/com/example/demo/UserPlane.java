@@ -26,6 +26,8 @@ public class UserPlane extends FighterPlane {
 	private HeartDisplay heartDisplay;
 	private LevelView levelView;
 
+	private boolean shieldActive = false;
+
 	public UserPlane(int initialHealth) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, initialHealth);
 		this.health = initialHealth;
@@ -66,6 +68,27 @@ public class UserPlane extends FighterPlane {
 	@Override
 	public void updateActor() {
 		updatePosition();
+	}
+
+	public void activateShield(){
+		shieldActive = true;
+	}
+
+	public void deactivateShield(){
+		shieldActive = false;
+	}
+
+	@Override
+	public void takeDamage(){
+		if(shieldActive){
+			System.out.println("User shielded, no damage taken");
+			return;
+		}
+		super.takeDamage();
+	}
+
+	public boolean isShieldActive(){
+		return shieldActive;
 	}
 	
 	@Override
@@ -118,4 +141,16 @@ public class UserPlane extends FighterPlane {
 	public void incrementKillCount() {
 		numberOfKills++;
 	}
+
+	private void applyPowerUpEffect(){
+		incrementHealth();
+		System.out.println("Health increased current health: " + getHealth());
+	}
+
+
+	public void incrementHealth(){
+		this.health++;
+		System.out.println("Health incremented. current health: " + this.health);
+	}
+
 }

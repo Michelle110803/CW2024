@@ -15,6 +15,7 @@ import com.example.demo.controller.Controller;
 public class LevelTwo extends LevelParent {
 
 	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background2.jpg";
+	private static final String NEXT_LEVEL = "com.example.demo.LevelThree";
 	private static final int PLAYER_INITIAL_HEALTH = 5;
 	private  Boss boss;
 	private LevelViewLevelTwo levelView;
@@ -34,24 +35,22 @@ public class LevelTwo extends LevelParent {
 	@Override
 	protected void initializeFriendlyUnits() {
 		getRoot().getChildren().add(getUser());
-		//getRoot().getChildren().add(boss.shieldImage);
 	}
 
 	@Override
 	protected void checkIfGameOver() {
 		if (userIsDestroyed()) {
-			System.out.println("Player destroyed in Leveltwo");
 			loseGame();
 		}
 		else if (boss.isDestroyed() && !levelTransitioned) {
-			winGame();
+			levelTransitioned = true;
+			goToNextLevel(NEXT_LEVEL);
 		}
 	}
 
 	@Override
 	protected void spawnEnemyUnits() {
 		if (getCurrentNumberOfEnemies() == 0 && !isBossSpawned) {
-			System.out.println("Spawning boss enemy");
 			boss = new Boss((LevelViewLevelTwo) levelView);
 			addEnemyUnit(boss);
 			isBossSpawned = true;
