@@ -11,10 +11,10 @@ public class LevelThree extends LevelParent {
 
     private static final String BACKGROUND_IMAGE = "/com/example/demo/images/background3.jpg";
     private static final int PLAYER_INITIAL_HEALTH = 5;
-    private static final int ENEMY_SPAWN_RATE = 60;
-    private static final int OBSTACLE_SPAWN_RATE = 150;
+    private static final int ENEMY_SPAWN_RATE = 90;
+    private static final int OBSTACLE_SPAWN_RATE = 50;
     private static final int POWER_UP_SPAWN_RATE = 150;
-    private static final int MAX_ENEMIES = 10;
+    private static final int MAX_ENEMIES = 5;
 
     private int enemySpawnTimer = 0;
     private int obstacleSpawnTimer = 0;
@@ -48,6 +48,7 @@ public class LevelThree extends LevelParent {
         if(obstacleSpawnTimer >= OBSTACLE_SPAWN_RATE){
             double randomX = Math.random() * getScreenWidth();
             Obstacle obstacle = new Obstacle (randomX , 0);
+            obstacle.increaseSpeed(3);
             addEnemyUnit(obstacle);
             obstacleSpawnTimer = 0;
         }
@@ -75,8 +76,15 @@ public class LevelThree extends LevelParent {
 
 
     protected void updateLevelThreeScene(){
-        spawnEnemyUnits();
-        spawnObstacles();
+        double randomChance = Math.random();
+
+        if(randomChance < 0.6){
+            spawnObstacles();
+        } else{
+            spawnEnemyUnits();
+        }
+        //spawnEnemyUnits();
+        //spawnObstacles();
         //spawnPowerUps();
     }
 

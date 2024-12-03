@@ -9,15 +9,16 @@ public class Obstacle extends ActiveActorDestructible {
 
     private static final String IMAGE_NAME = "Obstacle.png";
     private static final int IMAGE_HEIGHT = 100;
-    private static final int VERTICAL_VELOCITY = 2;
+    private int verticalVelocity;
 
     public Obstacle(double initialXPos, double initialYPos){
         super(IMAGE_NAME, IMAGE_HEIGHT, initialXPos, initialYPos);
+        this.verticalVelocity = 2;
     }
 
     @Override
     public void updatePosition(){
-        moveVertically(VERTICAL_VELOCITY);
+        moveVertically(verticalVelocity);
         if(getLayoutY() > 600){
             destroy();
         }
@@ -40,5 +41,9 @@ public class Obstacle extends ActiveActorDestructible {
         double width = getBoundsInParent().getWidth();
         double height = getBoundsInParent().getHeight();
         return new BoundingBox(x, y, width, height);
+    }
+
+    public void increaseSpeed(int increment){
+        verticalVelocity += increment;
     }
 }
