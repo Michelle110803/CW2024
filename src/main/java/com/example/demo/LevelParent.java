@@ -189,7 +189,7 @@ public abstract class LevelParent extends Observable {
 		handleCollisions(friendlyUnits, enemyUnits);
 	}
 
-	private void handleUserProjectileCollisions() {
+	protected void handleUserProjectileCollisions() {
 		for(ActiveActorDestructible projectile : userProjectiles){
 			for(ActiveActorDestructible enemy : enemyUnits){
 				if(projectile.getCustomBounds().intersects(enemy.getCustomBounds())){
@@ -292,9 +292,14 @@ public abstract class LevelParent extends Observable {
 	}
 
 	protected void addEnemyUnit(ActiveActorDestructible enemy) {
-		enemyUnits.add(enemy);
-		root.getChildren().add(enemy);
+		if (!enemyUnits.contains(enemy)) {
+			enemyUnits.add(enemy); // Add to the enemy list only if it's not already there
+			if (!getRoot().getChildren().contains(enemy)) {
+				getRoot().getChildren().add(enemy); // Add to the root only if it's not already present
+			}
+		}
 	}
+
 
 	private void updateNumberOfEnemies() {
 		currentNumberOfEnemies = enemyUnits.size();
@@ -311,6 +316,18 @@ public abstract class LevelParent extends Observable {
 
 	protected boolean userIsDestroyed() {
 		return user.isDestroyed();
+	}
+
+	protected List<ActiveActorDestructible> getEnemyUnits(){
+		return enemyUnits;
+	}
+
+	//protected int getCurrentNumberOfObstacles(){
+		//return (int) enemyUnits.stream().filter(unit instanceof Obstacle).count();
+	//}
+
+	protected LevelView getLevelView(){
+		return levelView;
 	}
 
 }

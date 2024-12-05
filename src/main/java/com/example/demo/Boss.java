@@ -36,8 +36,12 @@ public class Boss extends FighterPlane {
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
+	private int attackPhase = 1;
+	private int phaseTimer = 0;
+	private int currentPhase = 1;
 	private ShieldImage shieldImage;
 	private LevelViewLevelTwo levelView;
+	private double fireRate = BOSS_FIRE_RATE;
 
 	public Boss(LevelViewLevelTwo levelView) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
@@ -71,11 +75,12 @@ public class Boss extends FighterPlane {
 		double height = getBoundsInParent().getHeight() - 20;
 		return new BoundingBox(x, y, width, height);
 	}
-	
+
 	@Override
 	public void updateActor() {
 		updatePosition();
 		updateShield();
+		updatePhase();
 
 		if(levelView != null){
 			double bossX = getLayoutX() + getTranslateX();
@@ -86,9 +91,9 @@ public class Boss extends FighterPlane {
 
 	@Override
 	public ActiveActorDestructible fireProjectile() {
-		return bossFiresInCurrentFrame() ? new BossProjectile(getProjectileInitialPosition()) : null;
+		return Math.random() < fireRate ? new BossProjectile(getProjectileInitialPosition()) : null;
 	}
-	
+
 	@Override
 	public void takeDamage() {
 		if (isShielded) {
@@ -103,6 +108,17 @@ public class Boss extends FighterPlane {
 			movePattern.add(-VERTICAL_VELOCITY);
 			movePattern.add(ZERO);
 		}
+		Collections.shuffle(movePattern);
+	}
+
+	private void adjustMovementPattern(int newVelocity){
+		movePattern.clear();
+		for(int i = 0; i < MOVE_FREQUENCY_PER_CYCLE; i++){
+			movePattern.add(newVelocity);
+			movePattern.add(-newVelocity);
+			movePattern.add(ZERO);
+		}
+
 		Collections.shuffle(movePattern);
 	}
 
@@ -136,6 +152,40 @@ public class Boss extends FighterPlane {
 				levelView.hideShield();
 			}
 		}
+	}
+
+	private void updatePhase(){
+		phaseTimer++;
+
+		if(phaseTimer > 500){
+			phaseTimer = 0;
+			currentPhase++;
+
+			if(currentPhase > 3){
+				currentPhase = 1;
+			}
+
+			switch (currentPhase){
+				case 1:
+					System.out.println("Boss entered Phase 1: Aggresive fire rate");
+					setFireRate(0.08);
+					break;
+				case 2:
+					System.out.println("Boss entered phase 2: defensive shield");
+					activateShield();
+					setFireRate(0.03);
+					break;
+				case 3:
+					System.out.println("Boss entered Phase 3: Rapid movement ");
+					adjustMovementPattern(12);
+					deactivateShield();
+					break;
+			}
+		}
+	}
+
+	private void setFireRate(double rate){
+		fireRate = rate;
 	}
 
 
