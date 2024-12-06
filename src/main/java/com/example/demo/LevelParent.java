@@ -322,6 +322,10 @@ public abstract class LevelParent extends Observable {
 		return enemyUnits;
 	}
 
+	protected List<ActiveActorDestructible> getEnemyProjectiles() {
+		return enemyProjectiles;
+	}
+
 	//protected int getCurrentNumberOfObstacles(){
 		//return (int) enemyUnits.stream().filter(unit instanceof Obstacle).count();
 	//}
@@ -329,5 +333,10 @@ public abstract class LevelParent extends Observable {
 	protected LevelView getLevelView(){
 		return levelView;
 	}
+
+	protected List<ActiveActorDestructible> getUserProjectiles() {
+		return userProjectiles;
+	}
+
 
 }

@@ -5,8 +5,8 @@ import javafx.geometry.Bounds;
 
 public class UserProjectile extends Projectile {
 
-	private static final String IMAGE_NAME = "userfire.png";
-	private static final int IMAGE_HEIGHT = 20;
+	private static final String IMAGE_NAME = "snoopy_projectile.png";
+	private static final int IMAGE_HEIGHT = 70;
 	private static final int HORIZONTAL_VELOCITY = 10;
 
 	public UserProjectile(double initialXPos, double initialYPos) {

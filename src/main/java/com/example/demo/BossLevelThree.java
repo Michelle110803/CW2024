@@ -2,81 +2,100 @@ package com.example.demo;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.scene.Group;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class BossLevelThree extends FighterPlane {
 
     private static final String IMAGE_NAME = "woodstockenemy.png";
+    private static final int IMAGE_HEIGHT = 100;
+    private static final int IMAGE_WIDTH = 50;
     private static final double INITIAL_X_POSITION = 1100;
     private static final double INITIAL_Y_POSITION = 300;
-    private static final double VERTICAL_VELOCITY = 5;
-    private static final double HORIZONTAL_VELOCITY = 3;
+    private static final int SCREEN_HEIGHT = 750;
     private static final int HEALTH = 10;
+    private static final double FIRE_RATE = 0.04;
+    private static final int VERTICAL_VELOCITY = 8; // Vertical movement speed
+    private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
+    private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
 
-    private boolean isShielded = false;
     private final LevelViewLevelThree levelView;
-    private final Group root;
+    private final List<Integer> movePattern = new ArrayList<>();
+    private int consecutiveMovesInSameDirection = 0;
+    private int indexOfCurrentMove = 0;
 
-    public BossLevelThree(LevelViewLevelThree levelView, Group root) {
-        super(IMAGE_NAME, 70, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
+    public BossLevelThree(LevelViewLevelThree levelView) {
+        super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
         this.levelView = levelView;
-        this.root = root;
+        initializeMovePattern();
+    }
+
+    private void initializeMovePattern() {
+        // Add movement patterns (up, down, stationary)
+        for (int i = 0; i < MOVE_FREQUENCY_PER_CYCLE; i++) {
+            movePattern.add(VERTICAL_VELOCITY);
+            movePattern.add(-VERTICAL_VELOCITY);
+            movePattern.add(0); // Stay stationary
+        }
+        Collections.shuffle(movePattern); // Shuffle the pattern for randomness
+    }
+
+    private int getNextMove() {
+        int currentMove = movePattern.get(indexOfCurrentMove);
+        consecutiveMovesInSameDirection++;
+        if (consecutiveMovesInSameDirection >= MAX_FRAMES_WITH_SAME_MOVE) {
+            Collections.shuffle(movePattern); // Shuffle after a while
+            consecutiveMovesInSameDirection = 0;
+            indexOfCurrentMove++;
+        }
+        if (indexOfCurrentMove >= movePattern.size()) {
+            indexOfCurrentMove = 0;
+        }
+        return currentMove;
+    }
+
+    @Override
+    public void updatePosition() {
+        // Get the next move and apply it to vertical position
+        int moveY = getNextMove();
+        setLayoutY(getLayoutY() + moveY);
+
+        // Keep the boss within the screen bounds
+        if (getLayoutY() < 0) {
+            setLayoutY(0);
+        } else if (getLayoutY() + IMAGE_HEIGHT > SCREEN_HEIGHT) {
+            setLayoutY(SCREEN_HEIGHT - IMAGE_HEIGHT);
+        }
     }
 
     @Override
     public void updateActor() {
-        updatePosition(); // This should handle movement
-        updateShield();   // Handle shield activation and deactivation
-
-        if (levelView != null) {
-            levelView.updateShieldPosition(getLayoutX() + getTranslateX(), getLayoutY() + getTranslateY());
-        }
-
-        // Fire projectiles occasionally
-        if (Math.random() < 0.05) { // Adjust fire rate here
-            ActiveActorDestructible projectile = fireProjectile();
-            if (projectile != null) {
-                projectile.setLayoutX(getLayoutX() - 20);
-                projectile.setLayoutY(getLayoutY() + 20);
-                root.getChildren().add(projectile); // Ensure projectiles are added to the scene
-            }
-        }
-    }
-
-
-
-
-
-    private void moveRandomly() {
-        double randomDirection = Math.random();
-        if (randomDirection < 0.33) {
-            moveVertically(VERTICAL_VELOCITY);
-        } else if (randomDirection < 0.66) {
-            moveHorizontally(HORIZONTAL_VELOCITY);
-        } else {
-            moveVertically(-VERTICAL_VELOCITY);
-        }
-    }
-
-    private void updateShield() {
-        if (Math.random() < 0.01) { // Randomly toggle shield
-            isShielded = !isShielded;
-            if (isShielded) {
-                levelView.showShield();
-                System.out.println("Shield activated!");
-            } else {
-                levelView.hideShield();
-                System.out.println("Shield deactivated!");
-            }
-        }
+        updatePosition(); // Update vertical position
+        fireProjectiles(); // Call fire logic
     }
 
     @Override
-    public void takeDamage() {
-        if (!isShielded) {
-            super.takeDamage();
-        } else {
-            System.out.println("Boss shield is active. No damage taken!");
+    public ActiveActorDestructible fireProjectile() {
+        // Create and return a projectile
+        BossProjectileLevelThree projectile = new BossProjectileLevelThree(getLayoutY() + IMAGE_HEIGHT / 2);
+        if (getParent() instanceof javafx.scene.Group group) {
+            if (!group.getChildren().contains(projectile)) {
+                group.getChildren().add(projectile);
+                System.out.println("Projectile added to scene!");
+            }
+        }
+        if (levelView.getLevelThree() != null) {
+            levelView.getLevelThree().addEnemyProjectile(projectile);
+            System.out.println("Projectile added to enemyProjectiles!");
+        }
+        return projectile;
+    }
+
+    private void fireProjectiles() {
+        if (Math.random() < FIRE_RATE) {
+            System.out.println("Firing projectile!");
+            fireProjectile();
         }
     }
 
@@ -84,39 +103,8 @@ public class BossLevelThree extends FighterPlane {
     public Bounds getCustomBounds() {
         double x = getLayoutX() + getTranslateX();
         double y = getLayoutY() + getTranslateY();
-        double width = getBoundsInParent().getWidth();
-        double height = getBoundsInParent().getHeight();
+        double width = IMAGE_WIDTH;
+        double height = IMAGE_HEIGHT;
         return new BoundingBox(x, y, width, height);
     }
-
-    @Override
-    public ActiveActorDestructible fireProjectile() {
-        return Math.random() < 0.04 ? new BossProjectile(getLayoutY() + getTranslateY()) : null;
-    }
-
-    @Override
-    public void updatePosition() {
-        // Move the boss randomly in a limited area
-        double randomDirection = Math.random();
-        if (randomDirection < 0.33) {
-            moveVertically(5); // Move down
-        } else if (randomDirection < 0.66) {
-            moveVertically(-5); // Move up
-        } else {
-            moveHorizontally(-3); // Move left
-        }
-
-        // Ensure the boss stays within bounds
-        if (getLayoutY() + getTranslateY() < 0) {
-            setTranslateY(0 - getLayoutY());
-        } else if (getLayoutY() + getTranslateY() > 600) { // Adjust boundary as per your screen height
-            setTranslateY(600 - getLayoutY());
-        }
-
-        if (getLayoutX() + getTranslateX() < 900) { // Prevent moving too far left
-            setTranslateX(900 - getLayoutX());
-        }
-    }
-
-
 }
