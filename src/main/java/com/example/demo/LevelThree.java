@@ -1,85 +1,103 @@
 package com.example.demo;
-
 import javafx.util.Duration;
-import java.util.List;
-import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
-import javafx.geometry.Bounds;
+import java.sql.Time;
+import java.util.Iterator;
+
 
 public class LevelThree extends LevelParent {
-
     private static final String BACKGROUND_IMAGE = "/com/example/demo/images/background3.jpg";
     private static final int PLAYER_INITIAL_HEALTH = 5;
+    private static final int ENEMY_SPAWN_RATE = 60;
     private static final int OBSTACLE_SPAWN_RATE = 150;
-    private static final int MAX_OBSTACLES = 5;
-
+    private static final int POWER_UP_SPAWN_RATE = 150;
+    private static final int MAX_ENEMIES = 10;
+    private int enemySpawnTimer = 0;
     private int obstacleSpawnTimer = 0;
-    private BossLevelThree boss; // Level 3 boss
+    private int powerUpSpawnTimer = 0;
+    private boolean levelTransitioned = false;
 
-    private final List<ActiveActorDestructible> enemyProjectiles = new ArrayList<>();
 
-
-    public LevelThree(double screenHeight, double screenWidth) {
-        super(BACKGROUND_IMAGE, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
+    public LevelThree(double screenHeight, double screenWidth){
+        super (BACKGROUND_IMAGE, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
     }
-
     @Override
-    protected void initializeFriendlyUnits() {
-        // Add the user plane to the scene
-        if (!getRoot().getChildren().contains(getUser())) {
-            getRoot().getChildren().add(getUser());
-        }
-
-        // Initialize the boss if it's null
-        if (boss == null) {
-            // Get the LevelViewLevelThree instance
-            LevelViewLevelThree levelView = (LevelViewLevelThree) getLevelView();
-
-            // Create the BossLevelThree instance
-            boss = new BossLevelThree(levelView);
-        }
-
-        // Add the boss to the scene if it's not already added
-        if (!getRoot().getChildren().contains(boss)) {
-            getRoot().getChildren().add(boss);
-        }
+    protected void initializeFriendlyUnits(){
+        getRoot().getChildren().add(getUser());
     }
-
-
-
     @Override
-    protected void spawnEnemyUnits() {
-        // No regular enemies in Level 3
+    protected void spawnEnemyUnits(){
+        enemySpawnTimer++;
+        if(enemySpawnTimer >= ENEMY_SPAWN_RATE && getCurrentNumberOfEnemies() < MAX_ENEMIES){
+            double randomY = Math.random() * getEnemyMaximumYPosition();
+            EnemyPlane enemy = new EnemyPlane(getScreenWidth(), randomY);
+            addEnemyUnit(enemy);
+            enemySpawnTimer = 0;
+        }
     }
-
-    private void spawnObstacle() {
+    private void spawnObstacles(){
         obstacleSpawnTimer++;
-        if (obstacleSpawnTimer >= OBSTACLE_SPAWN_RATE && getCurrentNumberOfObstacles() < MAX_OBSTACLES) {
+        if(obstacleSpawnTimer >= OBSTACLE_SPAWN_RATE){
             double randomX = Math.random() * getScreenWidth();
-            Obstacle obstacle = new Obstacle(randomX, 0);
-            obstacle.increaseSpeed(2); // Adjust obstacle speed
+            Obstacle obstacle = new Obstacle (randomX , 0);
             addEnemyUnit(obstacle);
             obstacleSpawnTimer = 0;
         }
     }
 
+
+    private void spawnPowerUps() {
+        powerUpSpawnTimer++;
+        if (powerUpSpawnTimer >= POWER_UP_SPAWN_RATE) {
+            double randomX = Math.random() * (getScreenWidth() - 50); // Ensure it's within screen bounds
+            PowerUp powerUp = new PowerUp(randomX, -50); // Start just above the screen
+            addPowerUp(powerUp);
+            powerUpSpawnTimer = 0;
+            System.out.println("Spawned a PowerUp at X: " + randomX + ", Y: -50");
+        }
+    }
+
+
+
+
     @Override
-    protected void checkIfGameOver() {
-        if (userIsDestroyed()) {
+    protected void checkIfGameOver(){
+        if(userIsDestroyed()){
             loseGame();
-        } else if (boss.isDestroyed()) {
-            winGame(); // Transition to the next level or win the game
+        } else if (getUser().getNumberOfKills() >= MAX_ENEMIES) {
+            levelTransitioned = true;
+            winGame();
         }
     }
 
 
     protected void updateLevelThreeScene() {
-        boss.updateActor(); // Update the boss
-        enemyProjectiles.forEach(ActiveActorDestructible::updatePosition); // Update projectile positions
-        handleEnemyProjectileCollisions(); // Check for collisions
-        spawnObstacle(); // Spawn obstacles if needed
+        spawnEnemyUnits();
+        spawnObstacles();
+        spawnPowerUps();
+
+        // Update power-ups and check for collisions
+        for (Iterator<PowerUp> iterator = getPowerUps().iterator(); iterator.hasNext();) {
+            PowerUp powerUp = iterator.next();
+            powerUp.updatePosition(); // Move the power-up
+
+            // Collision check with debugging logs
+            if (powerUp.isCollectedByUser(getUser())) {
+                System.out.println("Collision detected! PowerUp collected.");
+                getUser().incrementHealth(); // Increment user health
+                getLevelView().updateHearts(getUser().getHealth()); // Update heart display
+                powerUp.destroy(); // Remove the power-up
+                iterator.remove(); // Remove from active list
+            } else {
+                System.out.println("No collision. PowerUp Bounds: " + powerUp.getCustomBounds()
+                        + ", UserPlane Bounds: " + getUser().getCustomBounds());
+            }
+        }
+
+        removeAllDestroyedActors();
+        checkIfGameOver();
     }
 
 
@@ -87,97 +105,44 @@ public class LevelThree extends LevelParent {
 
 
 
-    //@Override
-    protected void initializeSceneLogic() {
-        Timeline levelThreeTimeLine = new Timeline(new KeyFrame(Duration.millis(40), e -> {
-            updateLevelThreeScene();
-            checkIfGameOver();
-            removeAllDestroyedActors();
-        }));
+    protected void initializeSceneLogic(){
+        Timeline levelThreeTimeLine = new Timeline(new KeyFrame(Duration.millis(40),
+                e -> {
+                    updateLevelThreeScene();
+                    checkIfGameOver();
+                    removeAllDestroyedActors();
+                }
+        ));
         levelThreeTimeLine.setCycleCount(Timeline.INDEFINITE);
         levelThreeTimeLine.play();
     }
 
+
     @Override
-    protected LevelView instantiateLevelView() {
-        return new LevelViewLevelThree(getRoot(), PLAYER_INITIAL_HEALTH, this);
+    protected LevelView instantiateLevelView(){
+        return new LevelView(getRoot(), PLAYER_INITIAL_HEALTH);
     }
-
-
     @Override
-    public Scene initializeScene() {
+    public Scene initializeScene(){
         Scene scene = super.initializeScene();
         initializeSceneLogic();
         return scene;
     }
 
-    private int getCurrentNumberOfObstacles() {
-        return (int) getEnemyUnits().stream().filter(unit -> unit instanceof Obstacle).count();
-    }
-
-
-    protected void handleUserProjectileCollisions() {
-        for(ActiveActorDestructible projectile : getUserProjectiles()){
-            for(ActiveActorDestructible enemy : getEnemyUnits()){
-                if(projectile.getCustomBounds().intersects(enemy.getCustomBounds())){
-                    if(enemy instanceof Boss){
-                        Boss boss = (Boss) enemy;
-                        if(boss.isShielded()){
-                            System.out.println("Projectile hit shield. boss takes no damage");
-                        } else{
-                            boss.takeDamage();
-                            System.out.println("Projectile hit boss. health reduced, remaining health: " + boss.getHealth());
-                        }
-                    } else{
-                        enemy.takeDamage();
-                    }
-                    projectile.destroy();
-                }
-            }
-        }
-        //handleCollisions(userProjectiles, enemyUnits);
-    }
-
-    protected void handleEnemyProjectileCollisions() {
-        for (ActiveActorDestructible projectile : getEnemyProjectiles()) {
-            Bounds projectileBounds = projectile.getCustomBounds();
-            Bounds userBounds = getUser().getCustomBounds();
-
-            System.out.println("Projectile bounds: " + projectileBounds);
-            System.out.println("User bounds: " + userBounds);
-
-            // Manual intersection check
-            if (projectileBounds.getMaxX() >= userBounds.getMinX() &&
-                    projectileBounds.getMinX() <= userBounds.getMaxX() &&
-                    projectileBounds.getMaxY() >= userBounds.getMinY() &&
-                    projectileBounds.getMinY() <= userBounds.getMaxY()) {
-                System.out.println("Manual collision detected between projectile and user!");
-                getUser().takeDamage();
-                projectile.destroy();
+    private void handlePowerUpCollisions() {
+        for (ActiveActorDestructible powerUp : getFriendlyUnits()) {
+            if (powerUp instanceof PowerUp && getUser().getCustomBounds().intersects(powerUp.getCustomBounds())) {
+                System.out.println("Power-up collected!");
+                powerUp.destroy(); // Remove the power-up
+                applyPowerUpEffect(); // Apply the effect
             }
         }
     }
 
-
-
-    public void addEnemyProjectile(ActiveActorDestructible projectile) {
-        if (!enemyProjectiles.contains(projectile)) {
-            enemyProjectiles.add(projectile);
-            if (!getRoot().getChildren().contains(projectile)) {
-                getRoot().getChildren().add(projectile);
-            }
-        }
+    private void applyPowerUpEffect() {
+        // Example effect: restore health
+        getUser().heal(1);
+        System.out.println("Health restored by 1! Current health: " + getUser().getHealth());
     }
-
-
-
-
-    protected void removeAllDestroyedActors() {
-        super.removeAllDestroyedActors(); // Call parent logic
-        enemyProjectiles.removeIf(ActiveActorDestructible::isDestroyed); // Remove destroyed projectiles
-    }
-
-
-
 
 }

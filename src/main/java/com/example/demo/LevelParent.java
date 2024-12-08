@@ -31,6 +31,7 @@ public abstract class LevelParent extends Observable {
 	private final List<ActiveActorDestructible> enemyUnits;
 	private final List<ActiveActorDestructible> userProjectiles;
 	private final List<ActiveActorDestructible> enemyProjectiles;
+	private final List<PowerUp> powerUps = new ArrayList<>();
 
 	private int currentNumberOfEnemies;
 	private final LevelView levelView;
@@ -92,7 +93,7 @@ public abstract class LevelParent extends Observable {
 		}
 	}
 
-	private void updateScene() {
+	protected void updateScene() {
 		spawnEnemyUnits();
 		updateActors();
 		generateEnemyFire();
@@ -151,7 +152,7 @@ public abstract class LevelParent extends Observable {
 
 
 
-	private void spawnEnemyProjectile(ActiveActorDestructible projectile) {
+	protected void spawnEnemyProjectile(ActiveActorDestructible projectile) {
 		if (projectile != null) {
 			root.getChildren().add(projectile);
 			enemyProjectiles.add(projectile);
@@ -212,7 +213,7 @@ public abstract class LevelParent extends Observable {
 	}
 
 
-	private void handleEnemyProjectileCollisions() {
+	protected void handleEnemyProjectileCollisions() {
 		handleCollisions(enemyProjectiles, friendlyUnits);
 	}
 
@@ -338,5 +339,23 @@ public abstract class LevelParent extends Observable {
 		return userProjectiles;
 	}
 
+	protected List<ActiveActorDestructible> getFriendlyUnits() {
+		return friendlyUnits;
+	}
+
+	protected List<PowerUp> getPowerUps(){
+		return powerUps;
+	}
+
+	protected void addPowerUp(PowerUp powerUp) {
+		getPowerUps().add(powerUp);
+		getRoot().getChildren().add(powerUp); // Add to the scene graph
+		System.out.println("PowerUp added at X: " + powerUp.getLayoutX() + ", Y: " + powerUp.getLayoutY());
+	}
+
+
+	protected void removeCollectedPowerUps(){
+		powerUps.removeIf(PowerUp::isDestroyed);
+	}
 
 }

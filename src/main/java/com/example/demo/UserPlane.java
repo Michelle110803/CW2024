@@ -153,4 +153,11 @@ public class UserPlane extends FighterPlane {
 		System.out.println("Health incremented. current health: " + this.health);
 	}
 
+	public void heal(int healthPoints) {
+		int maxHealth = 10; // Adjust this value based on your game's design
+		this.health = Math.min(this.health + healthPoints, maxHealth);
+		System.out.println("Healed! Current health: " + this.health);
+	}
+
+
 }
