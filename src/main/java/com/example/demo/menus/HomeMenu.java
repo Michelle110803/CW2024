@@ -1,5 +1,6 @@
 package com.example.demo.menus;
 
+import com.example.demo.controller.Controller;
 import javafx.stage.Stage;
 
 public class HomeMenu extends MenuParent {
@@ -21,7 +22,14 @@ public class HomeMenu extends MenuParent {
 
         // Start Game Button
         buttonImage("/com/example/demo/images/StartGameButton.png",
-                e -> System.out.println("Start Game clicked!"),
+                e -> {
+                    Controller controller = (Controller) stage.getUserData();
+                    try{
+                        controller.goToLevel("com.example.demo.LevelOne");
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                    }
+                 },
                 posX, initialY, buttonWidth, buttonHeight);
 
         // Instructions Button

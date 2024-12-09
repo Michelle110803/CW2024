@@ -21,10 +21,12 @@ public class Controller implements Observer {
 	private static final String HOME_MENU = "com.example.demo.menus.HomeMenu";
 	private final Stage stage;
 	private LevelParent currentLevel;
+	private static final String LEVEL_ONE = "com.example.demo.LevelOne";
 
 
 	public Controller(Stage stage) {
 		this.stage = stage;
+		stage.setUserData(this);
 	}
 
 	public void launchGame() throws ClassNotFoundException, NoSuchMethodException, SecurityException,
@@ -58,7 +60,7 @@ public class Controller implements Observer {
 		stage.setScene(scene);
 	}
 
-	private void goToLevel(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
+	public void goToLevel(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		Class<?> myClass = Class.forName(className);
