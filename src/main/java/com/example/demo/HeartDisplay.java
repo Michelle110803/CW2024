@@ -6,8 +6,8 @@ import javafx.scene.layout.HBox;
 
 public class HeartDisplay {
 	
-	private static final String HEART_IMAGE_NAME = "/com/example/demo/images/live.png";
-	private static final int HEART_HEIGHT = 50;
+	public static final String HEART_IMAGE_NAME = "/com/example/demo/images/live.png";
+	public static final int HEART_HEIGHT = 50;
 	private static final int INDEX_OF_FIRST_ITEM = 0;
 	private HBox container;
 	private double containerXPosition;

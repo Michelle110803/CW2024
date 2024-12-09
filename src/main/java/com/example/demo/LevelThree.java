@@ -3,7 +3,7 @@ import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
-import java.sql.Time;
+//import java.sql.Time;
 import java.util.Iterator;
 
 
@@ -51,8 +51,9 @@ public class LevelThree extends LevelParent {
     private void spawnPowerUps() {
         powerUpSpawnTimer++;
         if (powerUpSpawnTimer >= POWER_UP_SPAWN_RATE) {
-            double randomX = Math.random() * (getScreenWidth() - 50); // Ensure it's within screen bounds
-            PowerUp powerUp = new PowerUp(randomX, -50); // Start just above the screen
+            double randomX = Math.random() * getScreenWidth();
+            double randomY = Math.random() * getScreenHeight();
+            PowerUp powerUp = new PowerUp(randomX, randomY);
             addPowerUp(powerUp);
             powerUpSpawnTimer = 0;
             System.out.println("Spawned a PowerUp at X: " + randomX + ", Y: -50");
@@ -86,8 +87,8 @@ public class LevelThree extends LevelParent {
             // Collision check with debugging logs
             if (powerUp.isCollectedByUser(getUser())) {
                 System.out.println("Collision detected! PowerUp collected.");
-                getUser().incrementHealth(); // Increment user health
-                getLevelView().updateHearts(getUser().getHealth()); // Update heart display
+                getUser().incrementHealth(getLevelView()); // Increment user health
+                //getLevelView().updateHearts(getUser().getHealth()); // Update heart display
                 powerUp.destroy(); // Remove the power-up
                 iterator.remove(); // Remove from active list
             } else {
@@ -99,9 +100,6 @@ public class LevelThree extends LevelParent {
         removeAllDestroyedActors();
         checkIfGameOver();
     }
-
-
-
 
 
 
@@ -127,16 +125,6 @@ public class LevelThree extends LevelParent {
         Scene scene = super.initializeScene();
         initializeSceneLogic();
         return scene;
-    }
-
-    private void handlePowerUpCollisions() {
-        for (ActiveActorDestructible powerUp : getFriendlyUnits()) {
-            if (powerUp instanceof PowerUp && getUser().getCustomBounds().intersects(powerUp.getCustomBounds())) {
-                System.out.println("Power-up collected!");
-                powerUp.destroy(); // Remove the power-up
-                applyPowerUpEffect(); // Apply the effect
-            }
-        }
     }
 
     private void applyPowerUpEffect() {

@@ -2,6 +2,8 @@ package com.example.demo;
 
 import javafx.application.Platform;
 import javafx.scene.Group;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 
 public class LevelView {
 
@@ -68,15 +70,31 @@ public class LevelView {
 
 	public void updateHearts(int currentHealth) {
 		Platform.runLater(() -> {
-			// Clear the current hearts
-			heartDisplay.getContainer().getChildren().clear();
+			int currentHearts = heartDisplay.getContainer().getChildren().size();
 
-			// Add the correct number of hearts based on current health
-			for (int i = 0; i < currentHealth; i++) {
+			// Add hearts incrementally
+			while (currentHearts < currentHealth) {
 				heartDisplay.addHeart();
+				currentHearts++;
 			}
+
+			// Remove hearts incrementally
+			while (currentHearts > currentHealth) {
+				heartDisplay.removeHeart();
+				currentHearts--;
+			}
+
+			System.out.println("Updated hearts to: " + currentHealth);
 		});
 	}
+
+
+
+
+
+
+
+
 
 
 }

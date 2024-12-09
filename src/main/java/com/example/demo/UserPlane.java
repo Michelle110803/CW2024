@@ -142,21 +142,28 @@ public class UserPlane extends FighterPlane {
 		numberOfKills++;
 	}
 
-	private void applyPowerUpEffect(){
-		incrementHealth();
-		System.out.println("Health increased current health: " + getHealth());
+
+	public void incrementHealth(LevelView levelView) {
+		if (health < 10) { // Ensure health doesn't exceed maximum
+			health++;
+			System.out.println("Health incremented. Current health: " + health);
+			levelView.updateHearts(health); // Update LevelView with the new health
+		} else {
+			System.out.println("Health is already at maximum!");
+		}
 	}
 
 
-	public void incrementHealth(){
-		this.health++;
-		System.out.println("Health incremented. current health: " + this.health);
-	}
+
 
 	public void heal(int healthPoints) {
 		int maxHealth = 10; // Adjust this value based on your game's design
 		this.health = Math.min(this.health + healthPoints, maxHealth);
 		System.out.println("Healed! Current health: " + this.health);
+	}
+
+	public void setLevelView(LevelView levelView){
+		this.levelView = levelView;
 	}
 
 

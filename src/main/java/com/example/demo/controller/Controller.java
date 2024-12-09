@@ -5,17 +5,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
-import javafx.application.Platform;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import com.example.demo.LevelParent;
+import com.example.demo.menus.MenuParent;
+import com.example.demo.menus.HomeMenu;
 
 
 public class Controller implements Observer {
 
-	private static final String LEVEL_ONE_CLASS_NAME = "com.example.demo.LevelOne";
+	//private static final String LEVEL_ONE_CLASS_NAME = "com.example.demo.LevelOne";
+	private static final String HOME_MENU = "com.example.demo.menus.HomeMenu";
 	private final Stage stage;
 	private LevelParent currentLevel;
 
@@ -28,7 +31,31 @@ public class Controller implements Observer {
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 
 			stage.show();
-			goToLevel(LEVEL_ONE_CLASS_NAME);
+			goToMenu(HOME_MENU);
+	}
+
+
+
+	private void goToMenu(String menuClassName) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		System.out.println("Going to menu " + menuClassName);
+
+		Class<?> myClass = Class.forName(menuClassName);
+		Constructor<?> constructor;
+		MenuParent myMenu;
+
+		if (menuClassName.equals("com.example.demo.menus.PauseMenu")) {
+			constructor = myClass.getConstructor(Stage.class, double.class, double.class, LevelParent.class);
+			myMenu = (MenuParent) constructor.newInstance(stage, stage.getWidth(), stage.getHeight(), currentLevel);
+		} else {
+			constructor = myClass.getConstructor(Stage.class, double.class, double.class);
+			myMenu = (MenuParent) constructor.newInstance(stage, stage.getWidth(), stage.getHeight());
+		}
+
+		myMenu.addObserver(this);
+
+		Scene scene = myMenu.initializeScene();
+		stage.setScene(scene);
 	}
 
 	private void goToLevel(String className) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
