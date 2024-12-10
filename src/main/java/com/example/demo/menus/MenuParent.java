@@ -15,18 +15,22 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.geometry.Bounds;
 import javafx.geometry.BoundingBox;
+import java.net.URL;
+
+import com.example.demo.SoundManager;
 
 public abstract class MenuParent extends Observable {
     protected final Stage stage;
-    private final Group root;
+    protected final Group root;
     private final Timeline timeline;
     private final Scene scene;
     private final ImageView background;
     protected final double screenWidth;
     protected final double screenHeight;
-    private static final String LEVEL_ONE = "com.example.demo.levels.LevelOne";
+    private static final String LEVEL_ONE = "com.example.demo.LevelOne";
+    private SoundManager soundManager;
 
-    public MenuParent(Stage stage, String backgroundImageName, double screenHeight, double screenWidth) {
+    public MenuParent(Stage stage, String backgroundImageName, double screenHeight, double screenWidth, String musicFilePath) {
         this.stage = stage;
         this.timeline = new Timeline();
         this.screenHeight = screenHeight;
@@ -36,6 +40,9 @@ public abstract class MenuParent extends Observable {
         this.background = new ImageView(new Image(getClass().getResource(backgroundImageName).toExternalForm()));
         initializeBackground();
         initializeControls();
+
+        soundManager = new SoundManager();
+        soundManager.playSound(musicFilePath);
     }
     public Scene initializeScene() {
         return scene;
@@ -49,28 +56,62 @@ public abstract class MenuParent extends Observable {
         root.getChildren().add(background); // Add the background to the scene
     }
 
-    private void initializeControls(){
-        timeline.stop();
+    protected void initializeControls() {
+        timeline.stop(); // Stop any previous animations
+
+        // Add this for debug purposes to ensure the background is initialized
+        System.out.println("Initializing controls...");
+
         background.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent e) {
                 KeyCode kc = e.getCode();
                 if (kc == KeyCode.SPACE) {
-                    System.out.println("Space");
+                    System.out.println("Space pressed.");
                     goToNextLevel(LEVEL_ONE);
                 }
             }
         });
     }
+
+
     public void goToNextLevel(String levelName) {
         setChanged();
         notifyObservers(levelName);
         timeline.stop();
     }
 
+    protected void goToMenu(String menuName) {
+        try {
+            Class<?> menuClass = Class.forName("com.example.demo.menus." + menuName);
+            Object menuInstance = menuClass.getConstructor(Stage.class, double.class, double.class)
+                    .newInstance(stage, screenHeight, screenWidth);
+
+            Scene scene = ((MenuParent) menuInstance).initializeScene();
+            stage.setScene(scene);
+
+            // Notify observers with the menu's fully qualified class name
+            setChanged();
+            notifyObservers(menuClass.getName());
+            System.out.println("Navigated to menu: " + menuName);
+        } catch (Exception e) {
+            System.err.println("Error loading menu: " + menuName);
+            e.printStackTrace();
+        }
+    }
+
+
+
+
     protected Button buttonImage(String buttonImagePath, EventHandler<ActionEvent> eventHandler,
                                  double posX, double posY, double buttonWidth, double buttonHeight) {
         // Load the image
-        Image image = new Image(getClass().getResource(buttonImagePath).toExternalForm());
+        URL resource = getClass().getResource(buttonImagePath);
+        if (resource == null) {
+            System.err.println("Resource not found: " + buttonImagePath);
+            return null; // Prevent further errors
+        }
+
+        Image image = new Image(resource.toExternalForm());
         ImageView buttonImageView = new ImageView(image);
 
         // Set the button dimensions
@@ -96,6 +137,7 @@ public abstract class MenuParent extends Observable {
 
         return button;
     }
+
 
 
 

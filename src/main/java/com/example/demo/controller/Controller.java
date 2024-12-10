@@ -21,7 +21,6 @@ public class Controller implements Observer {
 	private static final String HOME_MENU = "com.example.demo.menus.HomeMenu";
 	private final Stage stage;
 	private LevelParent currentLevel;
-	private static final String LEVEL_ONE = "com.example.demo.LevelOne";
 
 
 	public Controller(Stage stage) {
@@ -75,24 +74,27 @@ public class Controller implements Observer {
 
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
-		if (arg1 instanceof String) { // Ensure the argument is a valid String
-			String levelName = (String) arg1;
-			System.out.println("Controller notified to transition to: " + levelName);
+	public void update(Observable observable, Object arg) {
+		if (arg instanceof String) {
+			String notification = (String) arg;
+			System.out.println("Controller notified to transition to: " + notification);
 			try {
-				goToLevel(levelName); // Transition to the specified level
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException |
-					 InstantiationException | IllegalAccessException | IllegalArgumentException |
-					 InvocationTargetException e) {
-				e.printStackTrace();
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setContentText("Error: " + e.getMessage());
-				alert.show();
+				if (notification.startsWith("com.example.demo.Level")) {
+					goToLevel(notification); // Navigate to a level
+				} else if (notification.startsWith("com.example.demo.menus")) {
+					goToMenu(notification); // Navigate to a menu
+				} else {
+					System.err.println("Unexpected notification type: " + notification);
+				}
+			} catch (Exception e) {
+				handleError("Error handling update notification: " + notification, e);
 			}
 		} else {
-			System.err.println("Unexpected update notification received: " + arg1);
+			System.err.println("Unexpected update notification received: " + arg);
 		}
 	}
+
+
 
 
 
