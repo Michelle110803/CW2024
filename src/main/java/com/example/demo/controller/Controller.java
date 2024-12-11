@@ -6,6 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 
+import com.example.demo.SoundManager;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -21,11 +22,13 @@ public class Controller implements Observer {
 	private static final String HOME_MENU = "com.example.demo.menus.HomeMenu";
 	private final Stage stage;
 	private LevelParent currentLevel;
+	private SoundManager soundManager;
 
 
 	public Controller(Stage stage) {
 		this.stage = stage;
 		stage.setUserData(this);
+		soundManager = new SoundManager();
 	}
 
 	public void launchGame() throws ClassNotFoundException, NoSuchMethodException, SecurityException,
@@ -110,6 +113,10 @@ public class Controller implements Observer {
 		alert.setHeaderText(null);
 		alert.setContentText(content);
 		alert.show();
+	}
+
+	public SoundManager getSoundManager(){
+		return soundManager;
 	}
 
 

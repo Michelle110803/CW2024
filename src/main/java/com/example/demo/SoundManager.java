@@ -10,6 +10,7 @@ public class SoundManager{
 
     public void playSound(String filePath) {
         try {
+
             System.out.println("Attempting to play sound: " + filePath);
             URL resource = getClass().getResource(filePath);
             if (resource == null) {
@@ -18,7 +19,7 @@ public class SoundManager{
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(resource);
             clip = AudioSystem.getClip();
             clip.open(audioStream);
-            clip.start();
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
             System.out.println("Sound is playing: " + filePath);
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
@@ -30,6 +31,11 @@ public class SoundManager{
 
     public void playSoundLoop(String filePath) {
         try {
+            if(clip != null && clip.isRunning()){
+                return;
+            }
+            stopSound();
+
             System.out.println("Attempting to loop sound: " + filePath);
             URL resource = getClass().getResource(filePath);
             if (resource == null) {
@@ -50,6 +56,28 @@ public class SoundManager{
     public void stopSound(){
         if(clip != null && clip.isRunning()){
             clip.stop();
+            clip.close();
+            clip = null;
+        }
+    }
+
+    public void setVolume(double volume){
+        if(clip != null){
+            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            float dB = (float) (20.0 * Math.log10(volume));
+            volumeControl.setValue(dB);
+        }
+    }
+
+    public void pauseSound(){
+        if(clip != null && clip.isRunning()){
+            clip.stop();
+        }
+    }
+
+    public void resumeSound(){
+        if(clip != null && !clip.isRunning()){
+            clip.start();
         }
     }
 }

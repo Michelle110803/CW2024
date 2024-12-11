@@ -13,7 +13,7 @@ public class HomeMenu extends MenuParent {
 
     public HomeMenu(Stage stage, double screenWidth, double screenHeight) {
         super(stage, BACKGROUND_IMAGE_PATH, screenHeight, screenWidth, BACKGROUND_MUSIC);
-        soundManager = new SoundManager();
+        this.soundManager = new SoundManager();
         playBackgroundMusic();
         addMenuButtons();
     }
@@ -57,7 +57,10 @@ public class HomeMenu extends MenuParent {
 
         // Settings Button
         buttonImage("/com/example/demo/images/SettingsButton.png",
-                e -> System.out.println("Settings clicked!"),
+                e -> {
+                    System.out.println("Navigating to settingsmenu");
+                    goToMenu("SettingsMenu");
+                },
                 posX, initialY + 2 * spacing, buttonWidth, buttonHeight);
 
         // Exit Button
