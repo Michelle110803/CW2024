@@ -1,8 +1,9 @@
-package com.example.demo;
+package com.example.demo.actors;
 
+import com.example.demo.ActiveActorDestructible;
+import com.example.demo.projectiles.EnemyProjectile;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
 
 public class EnemyPlane extends FighterPlane {
 

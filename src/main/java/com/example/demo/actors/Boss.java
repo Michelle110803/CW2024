@@ -1,10 +1,11 @@
-package com.example.demo;
+package com.example.demo.actors;
 
+import com.example.demo.*;
+import com.example.demo.Levels.LevelViewLevelTwo;
+import com.example.demo.displays.ShieldImage;
+import com.example.demo.projectiles.BossProjectile;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-
-import com.example.demo.ActiveActorDestructible;
-import com.example.demo.LevelViewLevelTwo;
 
 import java.util.*;
 

@@ -1,16 +1,20 @@
-package com.example.demo;
+package com.example.demo.Levels;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.net.URL;
 
 
+import com.example.demo.ActiveActorDestructible;
+import com.example.demo.projectiles.EnemyProjectile;
+import com.example.demo.displays.PowerUp;
+import com.example.demo.actors.Boss;
+import com.example.demo.actors.FighterPlane;
+import com.example.demo.actors.UserPlane;
 import javafx.animation.*;
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.*;
-import javafx.scene.input.*;
 import javafx.util.Duration;
 
 public abstract class LevelParent extends Observable {

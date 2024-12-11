@@ -1,7 +1,7 @@
-package com.example.demo;
+package com.example.demo.actors;
 
+import com.example.demo.ActiveActorDestructible;
 import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
 
 public abstract class FighterPlane extends ActiveActorDestructible {
 

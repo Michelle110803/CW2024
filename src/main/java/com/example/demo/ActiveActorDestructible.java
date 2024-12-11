@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.actors.ActiveActor;
 import javafx.geometry.Bounds;
 
 public abstract class ActiveActorDestructible extends ActiveActor implements Destructible {

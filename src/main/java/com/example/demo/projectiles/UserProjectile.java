@@ -1,15 +1,15 @@
-package com.example.demo;
+package com.example.demo.projectiles;
 
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 
-public class EnemyProjectile extends Projectile {
-	
-	private static final String IMAGE_NAME = "woodstockProjectile.png";
-	private static final int IMAGE_HEIGHT = 70;
-	private static final int HORIZONTAL_VELOCITY = -10;
+public class UserProjectile extends Projectile {
 
-	public EnemyProjectile(double initialXPos, double initialYPos) {
+	private static final String IMAGE_NAME = "snoopy_projectile.png";
+	private static final int IMAGE_HEIGHT = 70;
+	private static final int HORIZONTAL_VELOCITY = 10;
+
+	public UserProjectile(double initialXPos, double initialYPos) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, initialXPos, initialYPos);
 	}
 
@@ -17,7 +17,7 @@ public class EnemyProjectile extends Projectile {
 	public void updatePosition() {
 		moveHorizontally(HORIZONTAL_VELOCITY);
 	}
-
+	
 	@Override
 	public void updateActor() {
 		updatePosition();
@@ -31,6 +31,5 @@ public class EnemyProjectile extends Projectile {
 		double height = getBoundsInParent().getHeight();
 		return new BoundingBox(x, y, width, height);
 	}
-
-
+	
 }

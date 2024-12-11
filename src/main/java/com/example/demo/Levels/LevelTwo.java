@@ -1,21 +1,13 @@
-package com.example.demo;
+package com.example.demo.Levels;
 
 import com.example.demo.controller.Controller;
-import com.example.demo.Boss;
-import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.scene.Group;
+import com.example.demo.actors.Boss;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-
-import java.lang.reflect.Constructor;
-
-import com.example.demo.controller.Controller;
 
 public class LevelTwo extends LevelParent {
 
 	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background2.jpg";
-	private static final String NEXT_LEVEL = "com.example.demo.LevelThree";
+	private static final String NEXT_LEVEL = "com.example.demo.Levels.LevelThree";
 	private static final int PLAYER_INITIAL_HEALTH = 5;
 	private  Boss boss;
 	private LevelViewLevelTwo levelView;

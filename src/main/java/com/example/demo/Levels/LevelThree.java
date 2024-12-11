@@ -1,4 +1,7 @@
-package com.example.demo;
+package com.example.demo.Levels;
+import com.example.demo.displays.Obstacle;
+import com.example.demo.displays.PowerUp;
+import com.example.demo.actors.EnemyPlane;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

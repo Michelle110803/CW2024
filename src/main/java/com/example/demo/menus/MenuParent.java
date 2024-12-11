@@ -27,7 +27,7 @@ public abstract class MenuParent extends Observable {
     private final ImageView background;
     protected final double screenWidth;
     protected final double screenHeight;
-    private static final String LEVEL_ONE = "com.example.demo.LevelOne";
+    private static final String LEVEL_ONE = "com.example.demo.Levels.LevelOne";
     private SoundManager soundManager;
 
     public MenuParent(Stage stage, String backgroundImageName, double screenHeight, double screenWidth, String musicFilePath) {

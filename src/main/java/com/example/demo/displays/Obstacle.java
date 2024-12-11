@@ -1,9 +1,8 @@
-package com.example.demo;
+package com.example.demo.displays;
 
+import com.example.demo.ActiveActorDestructible;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
-
-import java.net.URL;
 
 public class Obstacle extends ActiveActorDestructible {
 

@@ -40,7 +40,7 @@ public class HomeMenu extends MenuParent {
                     if (controller != null) {
                         try {
                             System.out.println("Navigating to Level One...");
-                            controller.goToLevel("com.example.demo.LevelOne");
+                            controller.goToLevel("com.example.demo.Levels.LevelOne");
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
