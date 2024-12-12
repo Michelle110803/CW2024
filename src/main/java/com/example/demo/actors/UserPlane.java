@@ -26,8 +26,6 @@ public class UserPlane extends FighterPlane {
 	private int horizontalVelocityMultiplier;
 	private int numberOfKills;
 	private int health;
-	private HeartDisplay heartDisplay;
-	private LevelView levelView;
 
 	private boolean shieldActive = false;
 
@@ -73,13 +71,6 @@ public class UserPlane extends FighterPlane {
 		updatePosition();
 	}
 
-	public void activateShield(){
-		shieldActive = true;
-	}
-
-	public void deactivateShield(){
-		shieldActive = false;
-	}
 
 	@Override
 	public void takeDamage(){
@@ -90,9 +81,6 @@ public class UserPlane extends FighterPlane {
 		super.takeDamage();
 	}
 
-	public boolean isShieldActive(){
-		return shieldActive;
-	}
 	
 	@Override
 	public ActiveActorDestructible fireProjectile() {
@@ -164,10 +152,4 @@ public class UserPlane extends FighterPlane {
 		this.health = Math.min(this.health + healthPoints, maxHealth);
 		System.out.println("Healed! Current health: " + this.health);
 	}
-
-	public void setLevelView(LevelView levelView){
-		this.levelView = levelView;
-	}
-
-
 }

@@ -24,12 +24,8 @@ public class Boss extends FighterPlane {
 	private static final int MOVE_FREQUENCY_PER_CYCLE = 5;
 	private static final int ZERO = 0;
 	private static final int MAX_FRAMES_WITH_SAME_MOVE = 10;
-	private static final int Y_POSITION_UPPER_BOUND = -100;
 	private static final int Y_POSITION_LOWER_BOUND = 475;
-	private static final int MAX_FRAMES_WITH_SHIELD = 800;
 	private static final int SHIELD_COOLDOWN_DURATION = 300;
-	private static final int MIN_TIME_BETWEEN_ACTIVATIONS = 100;
-	private int framesSinceLastActivation = 0;
 	private final List<Integer> movePattern;
 	private boolean isShielded = false;
 	private boolean shieldCooldown = false;
@@ -37,10 +33,8 @@ public class Boss extends FighterPlane {
 	private int consecutiveMovesInSameDirection;
 	private int indexOfCurrentMove;
 	private int framesWithShieldActivated;
-	private int attackPhase = 1;
 	private int phaseTimer = 0;
 	private int currentPhase = 1;
-	private ShieldImage shieldImage;
 	private LevelViewLevelTwo levelView;
 	private double fireRate = BOSS_FIRE_RATE;
 
@@ -168,16 +162,13 @@ public class Boss extends FighterPlane {
 
 			switch (currentPhase){
 				case 1:
-					System.out.println("Boss entered Phase 1: Aggresive fire rate");
 					setFireRate(0.08);
 					break;
 				case 2:
-					System.out.println("Boss entered phase 2: defensive shield");
 					activateShield();
 					setFireRate(0.03);
 					break;
 				case 3:
-					System.out.println("Boss entered Phase 3: Rapid movement ");
 					adjustMovementPattern(12);
 					deactivateShield();
 					break;
@@ -204,21 +195,11 @@ public class Boss extends FighterPlane {
 		return currentMove;
 	}
 
-	private boolean bossFiresInCurrentFrame() {
-		return Math.random() < BOSS_FIRE_RATE;
-	}
 
 	private double getProjectileInitialPosition() {
 		return getLayoutY() + getTranslateY() + PROJECTILE_Y_POSITION_OFFSET;
 	}
 
-	private boolean shieldShouldBeActivated() {
-		return Math.random() < BOSS_SHIELD_PROBABILITY;
-	}
-
-	private boolean shieldExhausted() {
-		return framesWithShieldActivated == MAX_FRAMES_WITH_SHIELD;
-	}
 
 	public boolean isShielded(){
 		return isShielded;
@@ -233,8 +214,6 @@ public class Boss extends FighterPlane {
 
 	private void deactivateShield() {
 		isShielded = false;
-		//shieldCooldown = true;
-		//shieldTimer = 0;
 		if(levelView != null){
 			levelView.hideShield();
 		}
