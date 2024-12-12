@@ -11,7 +11,7 @@ import java.util.*;
 
 public class Boss extends FighterPlane {
 
-	private static final String IMAGE_NAME = "bossplane.png";
+	private static final String IMAGE_NAME = "WoodstockBoss.png";
 	private static final double INITIAL_X_POSITION = 1000;
 	private static final double INITIAL_Y_POSITION = 400.0;
 	private static final double PROJECTILE_Y_POSITION_OFFSET = 75.0;
