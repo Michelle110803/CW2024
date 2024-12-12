@@ -66,7 +66,6 @@ public abstract class MenuParent extends Observable {
             public void handle(KeyEvent e) {
                 KeyCode kc = e.getCode();
                 if (kc == KeyCode.SPACE) {
-                    System.out.println("Space pressed.");
                     goToNextLevel(LEVEL_ONE);
                 }
             }
@@ -92,9 +91,7 @@ public abstract class MenuParent extends Observable {
             // Notify observers with the menu's fully qualified class name
             setChanged();
             notifyObservers(menuClass.getName());
-            System.out.println("Navigated to menu: " + menuName);
         } catch (Exception e) {
-            System.err.println("Error loading menu: " + menuName);
             e.printStackTrace();
         }
     }
@@ -107,7 +104,6 @@ public abstract class MenuParent extends Observable {
         // Load the image
         URL resource = getClass().getResource(buttonImagePath);
         if (resource == null) {
-            System.err.println("Resource not found: " + buttonImagePath);
             return null; // Prevent further errors
         }
 
@@ -137,9 +133,6 @@ public abstract class MenuParent extends Observable {
 
         return button;
     }
-
-
-
 
     protected Bounds getCustomBounds(Button button) {
         double x = button.getLayoutX() + button.getTranslateX() + 10;

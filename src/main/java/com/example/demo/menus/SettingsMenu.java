@@ -1,7 +1,7 @@
 package com.example.demo.menus;
 
 import com.example.demo.controller.Controller;
-import com.example.demo.SoundManager;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
@@ -20,7 +20,6 @@ public class SettingsMenu extends MenuParent {
     @Override
     protected void initializeControls(){
         super.initializeControls();
-        //soundManager.pauseSound();
 
         VBox layout = new VBox(20);
         layout.setLayoutX(screenWidth /3);
@@ -32,7 +31,6 @@ public class SettingsMenu extends MenuParent {
         volumeSlider.setShowTickMarks(true);
         volumeSlider.setMajorTickUnit(0.1);
         volumeSlider.valueProperty().addListener((observable, oldValue, newValue) ->{
-            System.out.println("volume set to: " + newValue.doubleValue());
             Controller controller = (Controller) stage.getUserData();
             if(controller != null && controller.getSoundManager() != null){
                 controller.getSoundManager().setVolume(newValue.doubleValue());
@@ -41,8 +39,6 @@ public class SettingsMenu extends MenuParent {
 
         Button backButton = new Button("Back to Menu");
         backButton.setOnAction(e -> {
-            //soundManager.resumeSound();
-            System.out.println("Navigating back to homemenu");
             goToMenu("HomeMenu");
         });
 

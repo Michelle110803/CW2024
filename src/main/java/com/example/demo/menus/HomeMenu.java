@@ -20,7 +20,6 @@ public class HomeMenu extends MenuParent {
 
     private void playBackgroundMusic() {
         String filePath = "/com/example/demo/audio/backgroundMusic.wav";
-        System.out.println("Attempting to loop background music: " + filePath);
         soundManager.playSoundLoop(filePath);
     }
 
@@ -39,7 +38,6 @@ public class HomeMenu extends MenuParent {
                     Controller controller = (Controller) stage.getUserData();
                     if (controller != null) {
                         try {
-                            System.out.println("Navigating to Level One...");
                             controller.goToLevel("com.example.demo.Levels.LevelOne");
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -58,7 +56,6 @@ public class HomeMenu extends MenuParent {
         // Settings Button
         buttonImage("/com/example/demo/images/SettingsButton.png",
                 e -> {
-                    System.out.println("Navigating to settingsmenu");
                     goToMenu("SettingsMenu");
                 },
                 posX, initialY + 2 * spacing, buttonWidth, buttonHeight);
@@ -66,15 +63,9 @@ public class HomeMenu extends MenuParent {
         // Exit Button
         buttonImage("/com/example/demo/images/ExitButton.png",
                 e -> {
-                    System.out.println("Exit clicked!");
                     System.exit(0);
                 },
                 posX, initialY + 3 * spacing, buttonWidth, buttonHeight);
-    }
-
-
-    public void onExit(){
-        soundManager.stopSound();
     }
 
 
