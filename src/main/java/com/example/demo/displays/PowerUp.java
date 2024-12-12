@@ -10,7 +10,6 @@ public class PowerUp extends ActiveActorDestructible {
     private static final String IMAGE_NAME = "powerup.png";
     private static final int IMAGE_HEIGHT = 100;
     private static final int VERTICAL_SPEED = 2;
-    private boolean isCollectedByUser = false;
 
     public PowerUp(double initialX, double initialY) {
         super(IMAGE_NAME, IMAGE_HEIGHT, initialX, initialY);
@@ -54,8 +53,6 @@ public class PowerUp extends ActiveActorDestructible {
         }
         return intersects;
     }
-
-
 
 
     public void destroy() {
