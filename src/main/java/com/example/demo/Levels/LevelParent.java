@@ -213,7 +213,6 @@ public abstract class LevelParent extends Observable {
 				}
 			}
 		}
-		//handleCollisions(userProjectiles, enemyUnits);
 	}
 
 
@@ -323,26 +322,11 @@ public abstract class LevelParent extends Observable {
 		return user.isDestroyed();
 	}
 
-	protected List<ActiveActorDestructible> getEnemyUnits(){
-		return enemyUnits;
-	}
-
-	protected List<ActiveActorDestructible> getEnemyProjectiles() {
-		return enemyProjectiles;
-	}
-
 
 	protected LevelView getLevelView(){
 		return levelView;
 	}
 
-	protected List<ActiveActorDestructible> getUserProjectiles() {
-		return userProjectiles;
-	}
-
-	protected List<ActiveActorDestructible> getFriendlyUnits() {
-		return friendlyUnits;
-	}
 
 	protected List<PowerUp> getPowerUps(){
 		return powerUps;
@@ -352,11 +336,6 @@ public abstract class LevelParent extends Observable {
 		getPowerUps().add(powerUp);
 		getRoot().getChildren().add(powerUp); // Add to the scene graph
 		System.out.println("PowerUp added at X: " + powerUp.getLayoutX() + ", Y: " + powerUp.getLayoutY());
-	}
-
-
-	protected void removeCollectedPowerUps(){
-		powerUps.removeIf(PowerUp::isDestroyed);
 	}
 
 }

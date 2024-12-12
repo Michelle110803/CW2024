@@ -44,9 +44,5 @@ public class LevelViewLevelTwo extends LevelView {
 		shieldImage.toFront();
 	}
 
-	public boolean isShieldVisible(){
-		return shieldImage.isVisible();
-	}
-
 
 }

@@ -2,11 +2,11 @@ package com.example.demo.Levels;
 import com.example.demo.displays.Obstacle;
 import com.example.demo.displays.PowerUp;
 import com.example.demo.actors.EnemyPlane;
+
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Scene;
-//import java.sql.Time;
 import java.util.Iterator;
 
 

@@ -3,7 +3,6 @@ package com.example.demo.Levels;
 import com.example.demo.ActiveActorDestructible;
 import com.example.demo.actors.EnemyPlane;
 
-import com.example.demo.controller.Controller;
 
 public class LevelOne extends LevelParent {
 

@@ -13,8 +13,6 @@ public class LevelTwo extends LevelParent {
 	private LevelViewLevelTwo levelView;
 	private boolean levelTransitioned = false;
 	private boolean isBossSpawned = false;
-	private Controller controller;
-	private Stage stage;
 
 
 
