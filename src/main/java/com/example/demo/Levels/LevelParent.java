@@ -331,9 +331,6 @@ public abstract class LevelParent extends Observable {
 		return enemyProjectiles;
 	}
 
-	//protected int getCurrentNumberOfObstacles(){
-		//return (int) enemyUnits.stream().filter(unit instanceof Obstacle).count();
-	//}
 
 	protected LevelView getLevelView(){
 		return levelView;
