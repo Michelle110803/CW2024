@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 
 public class LevelTwo extends LevelParent {
 
-	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/levelTwoBackground.jpg";
+	private static final String BACKGROUND_IMAGE_NAME = "/com/example/demo/images/background/levelTwoBackground.jpg";
 	private static final String NEXT_LEVEL = "com.example.demo.Levels.LevelThree";
 	private static final int PLAYER_INITIAL_HEALTH = 5;
 	private  Boss boss;

@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 public class HomeMenu extends MenuParent {
 
-    private static final String BACKGROUND_IMAGE_PATH = "/com/example/demo/images/MainMenuBackground.jpg";
+    private static final String BACKGROUND_IMAGE_PATH = "/com/example/demo/images/menus/MainMenuBackground.jpg";
     private static final String BACKGROUND_MUSIC = "/com/example/demo/audio/backgroundMusic.wav";
     private SoundManager soundManager;
 
@@ -33,7 +33,7 @@ public class HomeMenu extends MenuParent {
         double spacing = buttonHeight * 0.65; // Reduce spacing between buttons (closer)
 
         // Start Game Button
-        buttonImage("/com/example/demo/images/StartGameButton.png",
+        buttonImage("/com/example/demo/images/buttons/StartGameButton.png",
                 e -> {
                     soundManager.stopSound();
                     Controller controller = (Controller) stage.getUserData();
@@ -51,12 +51,12 @@ public class HomeMenu extends MenuParent {
                 posX, initialY, buttonWidth, buttonHeight);
 
         // Instructions Button
-        buttonImage("/com/example/demo/images/InstructionsButton.png",
+        buttonImage("/com/example/demo/images/buttons/InstructionsButton.png",
                 event -> goToMenu("InstructionsMenu"),
                 posX, initialY + spacing, buttonWidth, buttonHeight);
 
         // Settings Button
-        buttonImage("/com/example/demo/images/SettingsButton.png",
+        buttonImage("/com/example/demo/images/buttons/SettingsButton.png",
                 e -> {
                     System.out.println("Navigating to settingsmenu");
                     goToMenu("SettingsMenu");
@@ -64,7 +64,7 @@ public class HomeMenu extends MenuParent {
                 posX, initialY + 2 * spacing, buttonWidth, buttonHeight);
 
         // Exit Button
-        buttonImage("/com/example/demo/images/ExitButton.png",
+        buttonImage("/com/example/demo/images/buttons/ExitButton.png",
                 e -> {
                     System.out.println("Exit clicked!");
                     System.exit(0);

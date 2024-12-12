@@ -1,7 +1,6 @@
 package com.example.demo.menus;
 
 import com.example.demo.controller.Controller;
-import com.example.demo.SoundManager;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
@@ -9,7 +8,7 @@ import javafx.stage.Stage;
 
 public class SettingsMenu extends MenuParent {
 
-    private static final String BACKGROUND_IMAGE_PATH = "/com/example/demo/images/settingsBackground.jpg";
+    private static final String BACKGROUND_IMAGE_PATH = "/com/example/demo/images/menus/settingsBackground.jpg";
     private static final String BACKGROUND_MUSIC_PATH = "/com/example/demo/audio/backgroundMusic.wav";
 
     public SettingsMenu(Stage stage, double screenHeight, double screenWidth){

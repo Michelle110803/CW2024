@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 
 public class LevelThree extends LevelParent {
-    private static final String BACKGROUND_IMAGE = "/com/example/demo/images/background3.jpg";
+    private static final String BACKGROUND_IMAGE = "/com/example/demo/images/background/background3.jpg";
     private static final int PLAYER_INITIAL_HEALTH = 5;
     private static final int ENEMY_SPAWN_RATE = 60;
     private static final int OBSTACLE_SPAWN_RATE = 150;
