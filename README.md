@@ -73,6 +73,23 @@ as Snoopy on his doghouse, encountering challenges and enjoying engaging gamepla
     - Description: To make it more challenging, add mini boss to spawn little minions that will attack 
                     the userplane, equipped with a shield that will pop up on a random time and projectile 
                     that will take double the user's health
+4. High scores and leaderboard
+    - a system to save and display high scores across multiple sessions has not been implemented
+
+5. Power-Up mechanics 
+    - although power-ups are partially implemented, they lack diversity and functionality like: 
+        - temporary invincibility
+        - increased fire rate
+        - health regeneration
+6. multiplayer mode
+7. Dynamic difficulty adjustment
+    - the game does not adapt difficulty based on player's performance
+8. In-Game tutorial
+    - a dedicated tutorial level or guide for new player
+9. Achievement system
+    - a system to track and reward player achievements 
+10. Save and load system
+    - the ability to save progress and resume from the last completed level is missing
    
 
 ## New Java classes
@@ -178,4 +195,130 @@ as Snoopy on his doghouse, encountering challenges and enjoying engaging gamepla
     2. adjusted size for gameplay balancing
     3. added custom bounds to provide precise collision boundaries improving hit detection
 
-8. 
+8. FighterPlane.java
+    1. Moved class to specific package
+    2. added custom bounds as an abstract method to enforce precise hit box implementation in subclasses
+
+9. HeartDisplay.java
+    1. Moved class to specific package
+    2. change the image file 
+    3. enhanced heart manipulation
+        - new method addHeart() to add heart to the display
+        - improved removedHeart() to remove the last heart instead of the first, maintaining gameplay logic
+    4. Improved method names and streamlined logic for better clarity and maintainability 
+
+10. LevelOne.java 
+    1. Moved class to specific package
+    2. updated NEXT_LEVEL to reference to LevelTwo 
+    3. reduced KILLS_TO_ADVANCE from 10 to 5
+    4. added leveltwoinprogress and leveltransitioned (unused, but potentially for tracking level transitions in future enhancement)
+
+11. LevelParent.java
+    1. Added support for customized collision detection to handle new gameplay mechanics, such as boss shields and power-ups 
+    2. enhanced background initialization to handle missing resources
+    3. introduced more robust enemy projectile spawning and removal logic
+    4. added methods to handle power-ups and remove collected ones 
+
+12. LevelTwo.java
+    1. Boss Behaviour
+        - Boss is dynamically created and integrated with LevelViewLevelTwo for shield and phase updates
+        - Added a isBossSpawned to ensure the boss spawns only once
+    2. Level Transition
+        - Introduced NEXT_LEVEL constant for transitioning to LevelThree
+        - Added a LevelTransitioned flag to prevent multiple transitions when the boss is defeated
+    3. Level View Enhancements
+        - Level view dynamically updates to handle boss-specific visuals like shields
+    4. Controller integration
+        - Added reference to Controller for managing level flow
+
+13. LevelView.java
+    1. Enhancements
+        - Concurrency: 
+            - All UI modification are wrapped in Platform.runLater() to ensure thread-safe operations when interacting with the javaFX application thread
+        - Win and Game-Over Image Management:
+            - Prevents duplicate additions of win or game-over images by checking if they are already in the root's children
+            - prints debug messages if attempts are made to re-add existing images
+        - Dynamic Heart Updates: 
+            - improved logic to adjust the number of hearts dynamically to match the player's current health
+            - ensures that hearts are added or removed incrementally to avoid abrupt UI changes
+            - introduced an updateHearts method to synchronize the heart display with the player's health accurately 
+    2. Position changes: 
+        - Slightly adjusted the game-over image position for better alignment 
+
+14. LevelViewLevelTwo.java
+    1. Enhancements
+        - Dynamic Shield Positioning: 
+            - Introduced updateShieldPosition to dynamically adjust the shield's position to the boss
+            - added offsets for more precise alignment of the shield with the boss' position
+        - Visibility checks: 
+            - Added a method isShieldVisible to check the shield's current visibility state
+        - Prevent duplicate shield addition: 
+            - ensures the shield image is only added to the root once, avoiding runtime exceptions or duplicate visuals 
+        - Improved rendering
+          - utilizes toFront() to ensure the shield always appears in front of other elements
+
+15. Projectile.java
+    - Structure and functionality are retained from the original version
+    - Fully compatible with the design of destructible game elements 
+    - updatePosition() remains abstract to ensure subclass-specific behaviour is enforced
+
+16. ShieldImage.java
+    - image source: updated the image file path to specific package
+    - default visibility: the shield is now visible upon creation (setVisible(true))
+    - size adjustment: reduced the shield's size for better scaling
+
+17. UserPlane.java
+    1. New features
+        - Horizontal movement
+          - added moveleft and moveright methods
+          - enforced horizontal bounds using X_LEFT_BOUND and X_RIGHT_BOUND
+        - Custom Bounds
+          - implemented precise collision detection with the getCustomBounds method
+        - Shield mechanic
+          - added activateShield and deactivateShield methods 
+          - prevented damage while the shield is active
+        - health management
+          - introduced methods for healing and incrementing health 
+          - updated health display through integration with levelView
+    2. Projectile Firing
+        - Dynamically calculated projectile spawn position using getLayoutX() and getTranslateX()
+    3. Improved bound handling
+        - separated methods for stopping vertical (stopVertical) and horizontal (stopHorizontal) movement
+    4. LevelView integration
+        - integrated with LevelView for real-time updates on health changes
+    5. Enhanced Logging
+        - added logging for debugging shield activation, healing, and health updates
+
+18. UserProjectile.java
+    1. Image Update
+        - changed the projectile image
+    2. velocity adjustment
+        - reduced horizontal velocity
+    3. custom collision detection
+        - added getCustomBounds to define a precise bounding box for collision detection
+            - bounds are dynamically calculated based on the projectile's current position and dimensions
+    4. consistency with modified framework
+        - updated the class to a specific package
+
+
+## Unexpected Problems 
+
+1. Music Duplication
+    - Issue: Background music overlaps or duplicates when navigating between menus or levels 
+    - Cause: multiple instances of the SoundManager were triggered without stopping previous tracks
+    - Resolution Attempts: 
+      - implemented a singleton pattern for SoundManager
+      - Added checks to stop existing music before starting a new instance
+    - Status: partially resolved, but occasional overlaps persist during rapid transitions
+2. Level Transition Delays
+    - Issue: delays during transitions between levels, especially after boss fights
+    - Cause: heavy computations for spawning new entities and updating view elements
+    - Resolution attempts: 
+      - Preloaded assets for the next level to reduce transition time
+      - optimized the goToNextLevel logic by ensuring the timeline stops immediately 
+    - Status: Significantly improved, but minor delays remain
+3. Encountered difficulties running the game in Eclipse during initial setup:
+    - In Eclipse, the whole project has a problem, preventing it from building hence it could not run properly. 
+    - Syncing the project with github in Eclipse was a problem as it keeps asking token 
+4. Time Management
+    - Juggling between other Courseworks and tests all at the same time
