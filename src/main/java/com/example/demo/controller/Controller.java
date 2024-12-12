@@ -16,7 +16,7 @@ import com.example.demo.menus.MenuParent;
 
 public class Controller implements Observer {
 
-	//private static final String LEVEL_ONE_CLASS_NAME = "com.example.demo.Levels.LevelOne";
+
 	private static final String HOME_MENU = "com.example.demo.menus.HomeMenu";
 	private final Stage stage;
 	private LevelParent currentLevel;
@@ -35,7 +35,6 @@ public class Controller implements Observer {
 			stage.show();
 			goToMenu(HOME_MENU);
 	}
-
 
 
 	private void goToMenu(String menuClassName) throws ClassNotFoundException, NoSuchMethodException, SecurityException,
@@ -94,8 +93,6 @@ public class Controller implements Observer {
 			System.err.println("Unexpected update notification received: " + arg);
 		}
 	}
-
-
 
 
 
