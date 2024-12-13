@@ -9,6 +9,15 @@ import javafx.geometry.Bounds;
 
 import java.util.*;
 
+/**
+ * represents the boss in the game, extending {@link FighterPlane}
+ * the boss has unique behaviours such as shields, movement patterns, and different phases
+ * with varying fire rates and movement patterns
+ *
+ * @author michellealessandra
+ * @version 1.0
+ */
+
 public class Boss extends FighterPlane {
 
 	private static final String IMAGE_NAME = "WoodstockBoss.png";
@@ -38,6 +47,12 @@ public class Boss extends FighterPlane {
 	private LevelViewLevelTwo levelView;
 	private double fireRate = BOSS_FIRE_RATE;
 
+	/**
+	 * constructs the boss with specified level view
+	 *
+	 * @param levelView the {@link LevelViewLevelTwo} to which the boss belongs
+	 */
+
 	public Boss(LevelViewLevelTwo levelView) {
 		super(IMAGE_NAME, IMAGE_HEIGHT, INITIAL_X_POSITION, INITIAL_Y_POSITION, HEALTH);
 		this.levelView = levelView;
@@ -48,6 +63,11 @@ public class Boss extends FighterPlane {
 		isShielded = false;
 		initializeMovePattern();
 	}
+
+	/**
+	 * updates the boss' position based on its movement pattern
+	 * ensures the boss stays within defined screen boundaries
+	 */
 
 	@Override
 	public void updatePosition() {
@@ -62,6 +82,12 @@ public class Boss extends FighterPlane {
 		}
 	}
 
+	/**
+	 * gets custom bound of the boss for collision detection
+	 *
+	 * @return a {@link Bounds} object representing the custom bounds of the boss
+	 */
+
 	@Override
 	public Bounds getCustomBounds(){
 		double x = getLayoutX() + getTranslateX() + 10;
@@ -70,6 +96,10 @@ public class Boss extends FighterPlane {
 		double height = getBoundsInParent().getHeight() - 20;
 		return new BoundingBox(x, y, width, height);
 	}
+
+	/**
+	 * updates the state of the boss, including position, shield, and phase logic
+	 */
 
 	@Override
 	public void updateActor() {
@@ -84,10 +114,20 @@ public class Boss extends FighterPlane {
 		}
 	}
 
+	/**
+	 * fires a projectile from the boss with a probability determined by the fire rate
+	 *
+	 * @return a new {@link BossProjectile} if fired, or {@code null} otherwise
+	 */
+
 	@Override
 	public ActiveActorDestructible fireProjectile() {
 		return Math.random() < fireRate ? new BossProjectile(getProjectileInitialPosition()) : null;
 	}
+
+	/**
+	 * takes damage. if the boss' shield is active, damage is ignored
+	 */
 
 	@Override
 	public void takeDamage() {
@@ -97,6 +137,10 @@ public class Boss extends FighterPlane {
 		}
 	}
 
+	/**
+	 * initializes the movement pattern of the boss with vertical movements and pauses
+	 */
+
 	private void initializeMovePattern() {
 		for (int i = 0; i < MOVE_FREQUENCY_PER_CYCLE; i++) {
 			movePattern.add(VERTICAL_VELOCITY);
@@ -105,6 +149,12 @@ public class Boss extends FighterPlane {
 		}
 		Collections.shuffle(movePattern);
 	}
+
+	/**
+	 * adjusts the boss' movement pattern based on the specified velocity
+	 *
+	 * @param newVelocity the new velocity for the movement pattern
+	 */
 
 	private void adjustMovementPattern(int newVelocity){
 		movePattern.clear();
@@ -116,6 +166,10 @@ public class Boss extends FighterPlane {
 
 		Collections.shuffle(movePattern);
 	}
+
+	/**
+	 * updates the shield state of the boss, including activation, deactivation, and cooldown logic
+	 */
 
 	private void updateShield() {
 
@@ -149,6 +203,10 @@ public class Boss extends FighterPlane {
 		}
 	}
 
+	/**
+	 * updates the boss' phase logic, changing behaviour such as fire rate and movement patterns
+	 */
+
 	private void updatePhase(){
 		phaseTimer++;
 
@@ -176,9 +234,21 @@ public class Boss extends FighterPlane {
 		}
 	}
 
+	/**
+	 * sets the boss' fire rate
+	 *
+	 * @param rate the new fire rate
+	 */
+
 	private void setFireRate(double rate){
 		fireRate = rate;
 	}
+
+	/**
+	 * retrieves the next move in the boss' movement pattern
+	 *
+	 * @return the next move value
+	 */
 
 
 	private int getNextMove() {
@@ -195,15 +265,31 @@ public class Boss extends FighterPlane {
 		return currentMove;
 	}
 
+	/**
+	 * calculates the initial y-position for the boss' projectile
+	 *
+	 * @return the y-coordinate for the projectile's initial position
+	 */
+
 
 	private double getProjectileInitialPosition() {
 		return getLayoutY() + getTranslateY() + PROJECTILE_Y_POSITION_OFFSET;
 	}
 
+	/**
+	 * checks whether the boss' shield is active
+	 *
+	 * @return {@code true } if the shield is active, {@code false } otherwise
+	 */
+
 
 	public boolean isShielded(){
 		return isShielded;
 	}
+
+	/**
+	 * activates the boss' shield
+	 */
 
 	private void activateShield() {
 		isShielded = true;
@@ -211,6 +297,10 @@ public class Boss extends FighterPlane {
 			levelView.showShield();
 		}
 	}
+
+	/**
+	 * deactivates the boss' shield
+	 */
 
 	private void deactivateShield() {
 		isShielded = false;
