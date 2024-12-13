@@ -1,4 +1,5 @@
 package com.example.demo.Levels;
+
 import com.example.demo.displays.Obstacle;
 import com.example.demo.displays.PowerUp;
 import com.example.demo.actors.EnemyPlane;
@@ -9,7 +10,16 @@ import javafx.animation.Timeline;
 import javafx.scene.Scene;
 import java.util.Iterator;
 
-
+/**
+ * Represents Level Three in the game, which includes enemies, obstacles, and power-ups.
+ * <p>
+ * This level introduces a mix of gameplay elements, such as dynamic spawning of enemies, obstacles, and power-ups,
+ * providing an engaging challenge for the player.
+ * </p>
+ *
+ * @author michellealessandra
+ * @version 1.0
+ */
 public class LevelThree extends LevelParent {
     private static final String BACKGROUND_IMAGE = "/com/example/demo/images/background3.jpg";
     private static final int PLAYER_INITIAL_HEALTH = 5;
@@ -22,35 +32,55 @@ public class LevelThree extends LevelParent {
     private int powerUpSpawnTimer = 0;
     private boolean levelTransitioned = false;
 
-
-    public LevelThree(double screenHeight, double screenWidth){
-        super (BACKGROUND_IMAGE, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
+    /**
+     * Constructs a new LevelThree instance with the specified screen dimensions.
+     *
+     * @param screenHeight the height of the screen
+     * @param screenWidth  the width of the screen
+     */
+    public LevelThree(double screenHeight, double screenWidth) {
+        super(BACKGROUND_IMAGE, screenHeight, screenWidth, PLAYER_INITIAL_HEALTH);
     }
+
+    /**
+     * Initializes friendly units (e.g., the user's plane) and adds them to the scene.
+     */
     @Override
-    protected void initializeFriendlyUnits(){
+    protected void initializeFriendlyUnits() {
         getRoot().getChildren().add(getUser());
     }
+
+    /**
+     * Spawns enemy units periodically based on the spawn rate and ensures the number of enemies
+     * does not exceed the maximum allowed.
+     */
     @Override
-    protected void spawnEnemyUnits(){
+    protected void spawnEnemyUnits() {
         enemySpawnTimer++;
-        if(enemySpawnTimer >= ENEMY_SPAWN_RATE && getCurrentNumberOfEnemies() < MAX_ENEMIES){
+        if (enemySpawnTimer >= ENEMY_SPAWN_RATE && getCurrentNumberOfEnemies() < MAX_ENEMIES) {
             double randomY = Math.random() * getEnemyMaximumYPosition();
             EnemyPlane enemy = new EnemyPlane(getScreenWidth(), randomY);
             addEnemyUnit(enemy);
             enemySpawnTimer = 0;
         }
     }
-    private void spawnObstacles(){
+
+    /**
+     * Spawns obstacles at regular intervals to add difficulty to the level.
+     */
+    private void spawnObstacles() {
         obstacleSpawnTimer++;
-        if(obstacleSpawnTimer >= OBSTACLE_SPAWN_RATE){
+        if (obstacleSpawnTimer >= OBSTACLE_SPAWN_RATE) {
             double randomX = Math.random() * getScreenWidth();
-            Obstacle obstacle = new Obstacle (randomX , 0);
+            Obstacle obstacle = new Obstacle(randomX, 0);
             addEnemyUnit(obstacle);
             obstacleSpawnTimer = 0;
         }
     }
 
-
+    /**
+     * Spawns power-ups at regular intervals to provide bonuses to the player.
+     */
     private void spawnPowerUps() {
         powerUpSpawnTimer++;
         if (powerUpSpawnTimer >= POWER_UP_SPAWN_RATE) {
@@ -63,12 +93,13 @@ public class LevelThree extends LevelParent {
         }
     }
 
-
-
-
+    /**
+     * Checks if the game is over due to the player's destruction or if the player has
+     * defeated enough enemies to win the level.
+     */
     @Override
-    protected void checkIfGameOver(){
-        if(userIsDestroyed()){
+    protected void checkIfGameOver() {
+        if (userIsDestroyed()) {
             loseGame();
         } else if (getUser().getNumberOfKills() >= MAX_ENEMIES) {
             levelTransitioned = true;
@@ -76,7 +107,9 @@ public class LevelThree extends LevelParent {
         }
     }
 
-
+    /**
+     * Updates the scene by spawning enemies, obstacles, and power-ups, and handling their behavior.
+     */
     protected void updateLevelThreeScene() {
         spawnEnemyUnits();
         spawnObstacles();
@@ -87,11 +120,9 @@ public class LevelThree extends LevelParent {
             PowerUp powerUp = iterator.next();
             powerUp.updatePosition(); // Move the power-up
 
-            // Collision check with debugging logs
             if (powerUp.isCollectedByUser(getUser())) {
                 System.out.println("Collision detected! PowerUp collected.");
                 getUser().incrementHealth(getLevelView()); // Increment user health
-                //getLevelView().updateHearts(getUser().getHealth()); // Update heart display
                 powerUp.destroy(); // Remove the power-up
                 iterator.remove(); // Remove from active list
             } else {
@@ -104,9 +135,10 @@ public class LevelThree extends LevelParent {
         checkIfGameOver();
     }
 
-
-
-    protected void initializeSceneLogic(){
+    /**
+     * Initializes the scene logic, including the game loop for Level Three.
+     */
+    protected void initializeSceneLogic() {
         Timeline levelThreeTimeLine = new Timeline(new KeyFrame(Duration.millis(40),
                 e -> {
                     updateLevelThreeScene();
@@ -118,22 +150,33 @@ public class LevelThree extends LevelParent {
         levelThreeTimeLine.play();
     }
 
-
+    /**
+     * Instantiates the LevelView specific to Level Three.
+     *
+     * @return the LevelView instance
+     */
     @Override
-    protected LevelView instantiateLevelView(){
+    protected LevelView instantiateLevelView() {
         return new LevelView(getRoot(), PLAYER_INITIAL_HEALTH);
     }
+
+    /**
+     * Initializes the scene and starts the scene logic for Level Three.
+     *
+     * @return the initialized scene
+     */
     @Override
-    public Scene initializeScene(){
+    public Scene initializeScene() {
         Scene scene = super.initializeScene();
         initializeSceneLogic();
         return scene;
     }
 
+    /**
+     * Applies the effect of a power-up to the player (e.g., restoring health).
+     */
     private void applyPowerUpEffect() {
-        // Example effect: restore health
         getUser().heal(1);
         System.out.println("Health restored by 1! Current health: " + getUser().getHealth());
     }
-
 }
